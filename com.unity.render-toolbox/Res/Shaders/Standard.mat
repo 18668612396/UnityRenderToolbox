@@ -1,0 +1,114 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Standard
+  m_Shader: {fileID: 4800000, guid: e257817795dc3394aa64df7cba442425, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _BaseMap:
+        m_Texture: {fileID: 2800000, guid: db56485fb122a8746bce0e602a6b9878, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailTextureArray:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MaskMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NormalMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SecondBaseMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SecondMaskMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SecondNormalMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _ColorIntensity: 1
+    - _Cull: 2
+    - _Cutoff: 0.5
+    - _DetailArea0_DetailIndex: 1
+    - _DetailArea0_DiffuseIntensity: 1
+    - _DetailArea0_Enable: 0
+    - _DetailArea0_NormalIndex: 0
+    - _DetailArea0_NormalIntensity: 1
+    - _DetailArea0_Smoothness: 0
+    - _DetailArea1_DetailIndex: 2
+    - _DetailArea1_DiffuseIntensity: 1
+    - _DetailArea1_Enable: 0
+    - _DetailArea1_NormalIndex: 0
+    - _DetailArea1_NormalIntensity: 1
+    - _DetailArea1_Smoothness: 0
+    - _DetailArea2_DetailIndex: 3
+    - _DetailArea2_DiffuseIntensity: 1
+    - _DetailArea2_Enable: 0
+    - _DetailArea2_NormalIndex: 0
+    - _DetailArea2_NormalIntensity: 1
+    - _DetailArea2_Smoothness: 0
+    - _DetailArea3_DetailIndex: 4
+    - _DetailArea3_DiffuseIntensity: 1
+    - _DetailArea3_Enable: 0
+    - _DetailArea3_NormalIndex: 0
+    - _DetailArea3_NormalIntensity: 1
+    - _DetailArea3_Smoothness: 0
+    - _DstBlend: 0
+    - _DstBlendA: 0
+    - _EnableDetailArray: 0
+    - _EnableSecond: 0
+    - _IsUI: 0
+    - _OutlineDstBlend: 0
+    - _OutlineSrcBlend: 1
+    - _RenderMode: 0
+    - _RenderQueueOffset: 0
+    - _RimLightIntensity: 1
+    - _RimLightPower: 3
+    - _SrcBlend: 1
+    - _SrcBlendA: 1
+    - _UseAlphaTest: 0
+    - _ZWrite: 1
+    m_Colors:
+    - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _DetailArea0_BaseMapMatrix: {r: 1, g: 0, b: 0, a: 1}
+    - _DetailArea0_DiffuseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _DetailArea0_NormalMapMatrix: {r: 1, g: 0, b: 0, a: 1}
+    - _DetailArea1_BaseMapMatrix: {r: 1, g: 0, b: 0, a: 1}
+    - _DetailArea1_DiffuseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _DetailArea1_NormalMapMatrix: {r: 1, g: 0, b: 0, a: 1}
+    - _DetailArea2_BaseMapMatrix: {r: 1, g: 0, b: 0, a: 1}
+    - _DetailArea2_DiffuseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _DetailArea2_NormalMapMatrix: {r: 1, g: 0, b: 0, a: 1}
+    - _DetailArea3_BaseMapMatrix: {r: 1, g: 0, b: 0, a: 1}
+    - _DetailArea3_DiffuseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _DetailArea3_NormalMapMatrix: {r: 1, g: 0, b: 0, a: 1}
+    - _RimLightColor: {r: 1, g: 1, b: 1, a: 1}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1

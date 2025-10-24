@@ -63,7 +63,10 @@ CBUFFER_START(UnityPerMaterial)
     half _RimLightPower;
     half _RimLightIntensity;
 
+    half4 _ScatteringColor;
+    half _ScatteringIntensity;
 CBUFFER_END
+    half4 _SubSurfaceScatteringDiffuse_TexelSize;
 
 TEXTURE2D(_BaseMap);
 SAMPLER(sampler_BaseMap);
@@ -77,6 +80,12 @@ TEXTURE2D(_SecondNormalMap);
 SAMPLER(sampler_SecondNormalMap);
 TEXTURE2D(_SecondMaskMap);
 SAMPLER(sampler_SecondMaskMap);
+TEXTURE2D(_SubSurfaceScatteringDiffuse);
+SAMPLER(sampler_SubSurfaceScatteringDiffuse);
+TEXTURE2D(_ScatteringMap);
+SAMPLER(sampler_ScatteringMap);
+
+
 
 TEXTURE2D_ARRAY(_DetailTextureArray);
 SAMPLER(sampler_DetailTextureArray);

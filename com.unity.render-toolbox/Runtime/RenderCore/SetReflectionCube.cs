@@ -4,6 +4,7 @@ using UnityEngine;
 public class SetReflectionCube : MonoBehaviour
 {
     public Cubemap reflectionCube;
+    public Texture2D blueNoiseTexture;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -14,5 +15,6 @@ public class SetReflectionCube : MonoBehaviour
     void Update()
     {
         Shader.SetGlobalTexture("_ReflectionCube", reflectionCube);
+        Shader.SetGlobalTexture("_BlueNoiseTex", blueNoiseTexture);
     }
 }

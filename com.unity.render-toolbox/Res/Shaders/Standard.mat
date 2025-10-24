@@ -16,7 +16,7 @@ Material:
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
+  m_CustomRenderQueue: 2000
   stringTagMap: {}
   disabledShaderPasses: []
   m_LockedProperties: 
@@ -36,6 +36,10 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NormalMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ScatteringMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -82,8 +86,10 @@ Material:
     - _DetailArea3_Smoothness: 0
     - _DstBlend: 0
     - _DstBlendA: 0
+    - _EnableAlphaTest: 0
     - _EnableDetailArray: 0
     - _EnableSecond: 0
+    - _EnableSubSurfaceScattering: 0
     - _IsUI: 0
     - _OutlineDstBlend: 0
     - _OutlineSrcBlend: 1
@@ -91,6 +97,7 @@ Material:
     - _RenderQueueOffset: 0
     - _RimLightIntensity: 1
     - _RimLightPower: 3
+    - _ScatteringIntensity: 1
     - _SrcBlend: 1
     - _SrcBlendA: 1
     - _UseAlphaTest: 0
@@ -110,5 +117,6 @@ Material:
     - _DetailArea3_DiffuseColor: {r: 1, g: 1, b: 1, a: 1}
     - _DetailArea3_NormalMapMatrix: {r: 1, g: 0, b: 0, a: 1}
     - _RimLightColor: {r: 1, g: 1, b: 1, a: 1}
+    - _ScatteringColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

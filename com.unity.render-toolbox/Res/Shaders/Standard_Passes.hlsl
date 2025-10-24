@@ -3,6 +3,7 @@
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 #include "Packages/com.unity.render-toolbox/Res/Shaders/Lighting.hlsl"
+#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareDepthTexture.hlsl"
 
 struct Attributes
 {
@@ -22,6 +23,7 @@ struct Varyings
     float4 normalWS : TEXCOORD3;
     float4 viewDirWS : TEXCOORD4;
     float4 shadowCoords : TEXCOORD5;
+    float4 screenPos : TEXCOORD6;
     // float4 tangentWS : TEXCOORD2;
     // float4 bitangentWS : TEXCOORD3;
     // float4 normalWS : TEXCOORD4;
@@ -65,7 +67,8 @@ half4 GetDetailColors(float index)
     }
     return detailColor * detailIntensity;
 }
-float2 TransformDetailFormMatrix(float2 uv,float2x2 mat)
+
+float2 TransformDetailFormMatrix(float2 uv, float2x2 mat)
 {
     float2 pivot = float2(0.5, 0.5);
     return mul(mat, uv - pivot) + pivot;
@@ -123,10 +126,188 @@ Varyings LitPassVertex(Attributes input)
     output.normalWS = float4(normalInput.normalWS.xyz, vertexInput.positionWS.z);
     output.viewDirWS.xyz = normalize(_WorldSpaceCameraPos.xyz - vertexInput.positionWS);
     output.shadowCoords = GetShadowCoord(vertexInput);
+    output.screenPos = ComputeScreenPos(output.positionCS);
     return output;
 }
 
+half4 GetScatteringCoeffs(float2 uv)
+{
+    // half3 sss = get2DSample(_ScatteringMap, uv, disableFragment, cDefaultColor.mScattering).r * _ScatteringIntensity * _ScatteringColor;
+    return half4(_ScatteringIntensity * _ScatteringColor.rgb, 1);
+    half3 sss = SAMPLE_TEXTURE2D(_ScatteringMap, sampler_ScatteringMap, uv).rgb * _ScatteringIntensity * _ScatteringColor.rgb;
+    half a = sss == 0.0 ? 0.0 : 1.0;
+    return half4(sss, a);
+}
+
+// Substance 的 sss_pdf
+float3 sss_pdf(float r, float3 d)
+{
+    d = max(float3(1e-4, 1e-4, 1e-4), d);
+    return (exp(-r / d) + exp(-r / (3.0 * d))) / max(float3(1e-5, 1e-5, 1e-5), 8.0 * PI * d * r);
+}
+
+// Substance 的 samples_pdf
+float samples_pdf(float r, float d)
+{
+    return exp(-r / (3.0 * d)) / (6.0 * PI * d * r);
+}
+
+// Substance 的 samples_icdf
+float samples_icdf(float x, float d)
+{
+    return -3.0 * log(x) * d;
+}
+
+TEXTURE2D(_BlueNoiseTex);
+
+float3 ReconstructPositionWS(float2 uv, float depth)
+{
+    // 步骤 3: 计算 NDC 坐标（屏幕 UV 转换为 [-1, 1] 范围）
+    float4 ndc = float4(uv * 2.0 - 1.0, depth, 1.0);
+    #if UNITY_UV_STARTS_AT_TOP  // 处理平台翻转（DirectX vs OpenGL）
+    ndc.y *= -1.0;
+    #endif
+
+    // 步骤 4: 转换为 View Space 位置
+    float4 viewPos = mul(UNITY_MATRIX_I_P, ndc); // UNITY_MATRIX_I_P 是逆投影矩阵
+    viewPos /= viewPos.w; // 透视除法
+
+    // 步骤 5: 转换为 World Space 位置
+    float3 positionWS = mul(UNITY_MATRIX_I_V, float4(viewPos.xyz, 1.0)).xyz; // UNITY_MATRIX_I_V 是逆视图矩阵
+
+    // 示例: 可视化 positionWS（转换为颜色以调试）
+    return positionWS; // 偏移到 [0, 1] 范围显示
+}
+
+#define GOLD 0.618034  // Golden ratio for Fibonacci
+
+half3 sssConvolve(float2 screenUV, float4 d, float noise)
+{
+    float2 screenSize = _ScreenParams.xy;
+    float2 tex_coord = screenUV;
+    // 采样当前 diffuse 和深度
+    float4 prevDiffuse = SAMPLE_TEXTURE2D(_SubSurfaceScatteringDiffuse, sampler_SubSurfaceScatteringDiffuse, tex_coord);
+    float depth = SampleSceneDepth(tex_coord); // 或使用 _DepthRT 如果自定义
+    if (depth <= 0.0) return prevDiffuse; // 无深度，返回原值
+
+    float3 currPos = ReconstructPositionWS(tex_coord, depth);
+    // SSS 系数 (d = _Scattering.rgb, alpha = mask, 这里假设 mask=1)
+    if (max(max(d.x, d.y), d.z) <= 0.0) return prevDiffuse;
+
+    // 重要采样沿最大组件
+    float dmax = max(max(d.x, d.y), d.z);
+    float dz = dmax / -currPos.z; // 缩放采样分布
+
+    float3 X = float3(0, 0, 0), W = float3(0, 0, 0);
+
+    int _NumSamples = 32;
+    for (float i = 0.0; i < _NumSamples; i++)
+    {
+        // Fibonacci 螺旋
+        float r = (i + 0.5) / _NumSamples;
+        float t = 2.0 * PI * (GOLD * i + noise);
+
+        float icdf = samples_icdf(r, dz);
+        float2 offset = icdf * float2(cos(t) / screenSize.x, sin(t) / screenSize.y); // 转换为 UV 偏移
+        float2 sampleUV = tex_coord + offset;
+
+        // 采样 diffuse 和 depth
+        float4 sampleDiffuse = SAMPLE_TEXTURE2D(_SubSurfaceScatteringDiffuse, sampler_SubSurfaceScatteringDiffuse, sampleUV);
+        float sampleDepth = SampleSceneDepth(sampleUV);
+
+        // 重建 3D 位置并计算距离
+        float3 samplePos = ReconstructPositionWS(sampleUV, sampleDepth);
+        float dist = distance(currPos, samplePos);
+
+        if (dist > 0.0)
+        {
+            // 重新加权：使用 SSS PDF 而非 2D 重要采样权重
+            float3 weights = sampleDiffuse.a / samples_pdf(icdf, dz) * sss_pdf(dist, d);
+            // 假设 alpha 是 SSS mask
+            X += weights * sampleDiffuse.rgb;
+            W += weights;
+        }
+    }
+    // 归一化并返回
+    return half4(
+        W.r < 1e-5 ? prevDiffuse.r : X.r / W.r,
+        W.g < 1e-5 ? prevDiffuse.g : X.g / W.g,
+        W.b < 1e-5 ? prevDiffuse.b : X.b / W.b,
+        prevDiffuse.a
+    );
+}
+
 half4 LisPassFragment(Varyings input, half facing : VFACE) : SV_TARGET
+{
+    //获取屏幕空间uv
+    float2 screenUV = input.screenPos.xy / input.screenPos.w;
+    //采样基础贴图
+    half4 sample_base = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, input.uv.xy);
+    half alpha = sample_base.a * _Color.a;
+    if (_UseAlphaTest > 0.5)
+    {
+        clip(sample_base.w - _Cutoff);
+    }
+    half4 sample_normal = SAMPLE_TEXTURE2D(_NormalMap, sampler_NormalMap, input.uv.xy);
+    half4 sample_mask = SAMPLE_TEXTURE2D(_MaskMap, sampler_MaskMap, input.uv.xy);
+    //采样第二层纹理
+    half4 sample_secondBase = SAMPLE_TEXTURE2D(_SecondBaseMap, sampler_SecondBaseMap, input.uv.zw);
+    half4 sample_secondNormal = SAMPLE_TEXTURE2D(_SecondNormalMap, sampler_SecondNormalMap, input.uv.zw);
+    half4 sample_secondMask = SAMPLE_TEXTURE2D(_SecondMaskMap, sampler_SecondMaskMap, input.uv.zw);
+    //计算各自的法线
+    float2 baseNormalTS = sample_normal.xy * 2.0 - 1.0;
+    float2 secondNormalTS = (sample_secondNormal.xy * 2.0 - 1.0) * _EnableSecond * sample_secondBase.a;
+    //计算细节
+    int detailIndex = GetDetailLayerFromNormalAlpha(sample_normal.w);
+    half detailMask = GetDetailMask(input.uv.xy, detailIndex);
+    half4 detailColor = GetDetailColors(detailIndex);
+    half detailSmoothness = GetDetailSmoothness(detailIndex);
+    half3 detailNormal = GetDetailNormal(input.uv.xy, detailIndex);
+    float2 detailNormalTS = detailNormal.xy;
+    //计算切线空间法线
+    float3 normalTS = float3(baseNormalTS, 1.0);
+    normalTS.xy += lerp(detailNormalTS.xy, secondNormalTS.xy, sample_secondBase.a * _EnableSecond);
+    normalTS.z = sqrt(saturate(1.0 - dot(normalTS.xy, normalTS.xy)));
+    float3 inNormalWS = facing > 0 ? normalize(input.normalWS.xyz) : -normalize(input.normalWS.xyz);
+    float3x3 tbn = float3x3(normalize(input.tangentWS.xyz), normalize(input.bitangentWS.xyz), inNormalWS);
+    //准备向量
+    float3 positionWS = float3(input.tangentWS.w, input.bitangentWS.w, input.normalWS.w);
+    float3 normalWS = normalize(mul(normalTS, tbn));
+    float3 viewDirWS = normalize(input.viewDirWS.xyz);
+    //初始化SurfaceData
+    float3 baseColor = sample_base.rgb * _Color.rgb * _ColorIntensity;
+    baseColor = lerp(baseColor, detailColor.rgb * baseColor, detailMask); //混合细节贴图
+    baseColor = lerp(baseColor, sample_secondBase.rgb, sample_secondBase.a * _EnableSecond); //混合第二层贴图
+    float smoothness = sample_mask.r;
+    smoothness = lerp(smoothness, detailSmoothness, detailMask); //混合细节贴图
+    smoothness = lerp(smoothness, sample_secondMask.r, sample_secondBase.a * _EnableSecond); //混合第二层贴图
+    float metallic = sample_mask.g;
+    metallic = lerp(metallic, sample_secondMask.g, sample_secondBase.a * _EnableSecond); //混合第二层贴图
+    float occlusion = sample_normal.b;
+    occlusion = lerp(occlusion, sample_secondMask.b, sample_secondBase.a * _EnableSecond); //混合第二层贴图
+    float roughness = 1.0 - smoothness;
+    //PBR
+    Light mainLight = GetMainLight();
+    mainLight.distanceAttenuation = 1;
+    CharacterInputData inputData = GetNemoInputData(positionWS, normalWS, viewDirWS, input.shadowCoords);
+    CharacterSurfaceData surfaceData = GetNemoSurfaceData(baseColor.rgb, metallic, roughness, occlusion, _IsUI);
+    half3 lightDiffuseColor = LightDiffuse(inputData, surfaceData, mainLight);
+    half3 lightSpecular = LightSpecular(inputData, surfaceData, mainLight);
+    half3 irradianceDiffuse = IrradianceDiffuse(inputData, surfaceData);
+    half3 irradianceSpecular = IrradianceSpecularNew(inputData, surfaceData);
+    half4 finalColor;
+
+
+    half3 sample_diffuse = SAMPLE_TEXTURE2D(_SubSurfaceScatteringDiffuse, sampler_SubSurfaceScatteringDiffuse, screenUV);
+    half4 sssCoeffs = GetScatteringCoeffs(input.uv.xy);
+    uint3 loadCoords = uint3(uint2(input.positionCS.xy) & 0xFF, 0);
+    float noise = _BlueNoiseTex.Load(loadCoords).x;
+    half3 diffuseContrib = surfaceData.diffColor * sssConvolve(screenUV, sssCoeffs, noise);
+    finalColor.rgb = diffuseContrib + lightSpecular + (irradianceSpecular) * surfaceData.occlusion;
+    return half4(sssConvolve(screenUV, sssCoeffs, noise).rgb, alpha);
+}
+
+half4 SubSurfaceScatteringPassFragment(Varyings input, half facing : VFACE) : SV_TARGET
 {
     //采样基础贴图
     half4 sample_base = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, input.uv.xy);
@@ -178,68 +359,10 @@ half4 LisPassFragment(Varyings input, half facing : VFACE) : SV_TARGET
     mainLight.distanceAttenuation = 1;
     CharacterInputData inputData = GetNemoInputData(positionWS, normalWS, viewDirWS, input.shadowCoords);
     CharacterSurfaceData surfaceData = GetNemoSurfaceData(baseColor.rgb, metallic, roughness, occlusion, _IsUI);
-    half3 lightDiffuseColor = LightDiffuse(inputData, surfaceData,mainLight);
-    half3 lightSpecular = LightSpecular(inputData, surfaceData,mainLight);
-    half3 irradianceDiffuse = IrradianceDiffuse(inputData, surfaceData);
-    half3 irradianceSpecular = IrradianceSpecularNew(inputData, surfaceData);
-    half4 finalColor;
-    finalColor.rgb = lightDiffuseColor + lightSpecular + (irradianceDiffuse + irradianceSpecular) * surfaceData.occlusion;
-    return half4(finalColor.rgb, alpha);
-}
-half4 SubSurfaceScatteringPassFragment(Varyings input, half facing : VFACE) : SV_TARGET
-{
-   //采样基础贴图
-    half4 sample_base = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, input.uv.xy);
-    half alpha = sample_base.a * _Color.a;
-    if (_UseAlphaTest > 0.5)
-    {
-        clip(sample_base.w - _Cutoff);
-    }
-    half4 sample_normal = SAMPLE_TEXTURE2D(_NormalMap, sampler_NormalMap, input.uv.xy);
-    half4 sample_mask = SAMPLE_TEXTURE2D(_MaskMap, sampler_MaskMap, input.uv.xy);
-    //采样第二层纹理
-    half4 sample_secondBase = SAMPLE_TEXTURE2D(_SecondBaseMap, sampler_SecondBaseMap, input.uv.zw);
-    half4 sample_secondNormal = SAMPLE_TEXTURE2D(_SecondNormalMap, sampler_SecondNormalMap, input.uv.zw);
-    half4 sample_secondMask = SAMPLE_TEXTURE2D(_SecondMaskMap, sampler_SecondMaskMap, input.uv.zw);
-    //计算各自的法线
-    float2 baseNormalTS = sample_normal.xy * 2.0 - 1.0;
-    float2 secondNormalTS = (sample_secondNormal.xy * 2.0 - 1.0) * _EnableSecond * sample_secondBase.a;
-    //计算细节
-    int detailIndex = GetDetailLayerFromNormalAlpha(sample_normal.w);
-    half detailMask = GetDetailMask(input.uv.xy, detailIndex);
-    half4 detailColor = GetDetailColors(detailIndex);
-    half detailSmoothness = GetDetailSmoothness(detailIndex);
-    half3 detailNormal = GetDetailNormal(input.uv.xy, detailIndex);
-    float2 detailNormalTS = detailNormal.xy;
-    //计算切线空间法线
-    float3 normalTS = float3(baseNormalTS, 1.0);
-    normalTS.xy += lerp(detailNormalTS.xy, secondNormalTS.xy, sample_secondBase.a * _EnableSecond);
-    normalTS.z = sqrt(saturate(1.0 - dot(normalTS.xy, normalTS.xy)));
-    float3 inNormalWS = facing > 0 ? normalize(input.normalWS.xyz) : -normalize(input.normalWS.xyz);
-    float3x3 tbn = float3x3(normalize(input.tangentWS.xyz), normalize(input.bitangentWS.xyz), inNormalWS);
-    //准备向量
-    float3 positionWS = float3(input.tangentWS.w, input.bitangentWS.w, input.normalWS.w);
-    float3 normalWS = normalize(mul(normalTS, tbn));
-    float3 viewDirWS = normalize(input.viewDirWS.xyz);
-    //初始化SurfaceData
-    float3 baseColor = sample_base.rgb * _Color.rgb * _ColorIntensity;
-    baseColor = lerp(baseColor, detailColor.rgb * baseColor, detailMask); //混合细节贴图
-    baseColor = lerp(baseColor, sample_secondBase.rgb, sample_secondBase.a * _EnableSecond); //混合第二层贴图
-    float smoothness = sample_mask.r;
-    smoothness = lerp(smoothness, detailSmoothness, detailMask); //混合细节贴图
-    smoothness = lerp(smoothness, sample_secondMask.r, sample_secondBase.a * _EnableSecond); //混合第二层贴图
-    float metallic = sample_mask.g;
-    metallic = lerp(metallic, sample_secondMask.g, sample_secondBase.a * _EnableSecond); //混合第二层贴图
-    float occlusion = sample_normal.b;
-    occlusion = lerp(occlusion, sample_secondMask.b, sample_secondBase.a * _EnableSecond); //混合第二层贴图
-    float roughness = 1.0 - smoothness;
-    //PBR
-    Light mainLight = GetMainLight();
-    mainLight.distanceAttenuation = 1;
-    CharacterInputData inputData = GetNemoInputData(positionWS, normalWS, viewDirWS, input.shadowCoords);
-    CharacterSurfaceData surfaceData = GetNemoSurfaceData(baseColor.rgb, metallic, roughness, occlusion, _IsUI);
-    half3 lightDiffuseColor = LightDiffuse(inputData, surfaceData,mainLight);
-    half3 lightSpecular = LightSpecular(inputData, surfaceData,mainLight);
+    surfaceData.diffColor = 1;
+    surfaceData.specColor = 0;
+    half3 lightDiffuseColor = LightDiffuse(inputData, surfaceData, mainLight);
+    half3 lightSpecular = LightSpecular(inputData, surfaceData, mainLight);
     half3 irradianceDiffuse = IrradianceDiffuse(inputData, surfaceData);
     half3 irradianceSpecular = IrradianceSpecularNew(inputData, surfaceData);
     half4 finalColor;

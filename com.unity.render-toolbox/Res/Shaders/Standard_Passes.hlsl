@@ -133,8 +133,7 @@ Varyings LitPassVertex(Attributes input)
 half4 GetScatteringCoeffs(float2 uv)
 {
     // half3 sss = get2DSample(_ScatteringMap, uv, disableFragment, cDefaultColor.mScattering).r * _ScatteringIntensity * _ScatteringColor;
-    return half4(_ScatteringIntensity * _ScatteringColor.rgb, 1);
-    half3 sss = SAMPLE_TEXTURE2D(_ScatteringMap, sampler_ScatteringMap, uv).rgb * _ScatteringIntensity * _ScatteringColor.rgb;
+    half3 sss = SAMPLE_TEXTURE2D(_ScatteringMap, sampler_ScatteringMap, uv).rgb * _ScatteringIntensity * _ScatteringColor.rgb * 0.01;
     half a = sss == 0.0 ? 0.0 : 1.0;
     return half4(sss, a);
 }
@@ -160,10 +159,34 @@ float samples_icdf(float x, float d)
 
 TEXTURE2D(_BlueNoiseTex);
 
-float3 ReconstructPositionWS(float2 uv, float depth)
+// --- 所需的全局变量 (在 Pass 中声明) ---
+
+// 您必须从 C# 脚本传入这个矩阵：
+// shader.SetMatrix("projectionInverseMatrix", camera.projectionMatrix.inverse);
+float4x4 projectionInverseMatrix; 
+// --- 翻译后的函数 ---
+
+float3 ReconstructPositionWS(float2 tex_coord)
 {
+    // A. 采样深度 (使用此宏来保证跨平台兼容性)
+    #if UNITY_REVERSED_Z
+    real depth = SampleSceneDepth(tex_coord);
+    #else
+    // Adjust z to match NDC for OpenGL
+    real depth = lerp(UNITY_NEAR_CLIP_VALUE, 1, SampleSceneDepth(UV));
+    #endif
+    float3 worldPos = ComputeWorldSpacePosition(tex_coord, depth, UNITY_MATRIX_I_VP);
+    return worldPos;
+}
+float3 ReconstructPositionVS(float2 tex_coord)
+{
+    return TransformWorldToView(ReconstructPositionWS(tex_coord));
+}
+float3 sssGetPosition(float2 tex_coord)
+{
+    float depth = SampleSceneDepth(tex_coord); // 或使用 _DepthRT 如果自定义
     // 步骤 3: 计算 NDC 坐标（屏幕 UV 转换为 [-1, 1] 范围）
-    float4 ndc = float4(uv * 2.0 - 1.0, depth, 1.0);
+    float4 ndc = float4(tex_coord * 2.0 - 1.0, depth, 1.0);
     #if UNITY_UV_STARTS_AT_TOP  // 处理平台翻转（DirectX vs OpenGL）
     ndc.y *= -1.0;
     #endif
@@ -172,69 +195,55 @@ float3 ReconstructPositionWS(float2 uv, float depth)
     float4 viewPos = mul(UNITY_MATRIX_I_P, ndc); // UNITY_MATRIX_I_P 是逆投影矩阵
     viewPos /= viewPos.w; // 透视除法
 
-    // 步骤 5: 转换为 World Space 位置
-    float3 positionWS = mul(UNITY_MATRIX_I_V, float4(viewPos.xyz, 1.0)).xyz; // UNITY_MATRIX_I_V 是逆视图矩阵
-
     // 示例: 可视化 positionWS（转换为颜色以调试）
-    return positionWS; // 偏移到 [0, 1] 范围显示
+    return viewPos; // 偏移到 [0, 1] 范围显示
 }
-
-#define GOLD 0.618034  // Golden ratio for Fibonacci
-
-half3 sssConvolve(float2 screenUV, float4 d, float noise)
+float3 sssConvolve(float2 screenUV,float4 d, float noise)
 {
     float2 screenSize = _ScreenParams.xy;
+    const float GOLD = 0.618034;
     float2 tex_coord = screenUV;
-    // 采样当前 diffuse 和深度
-    float4 prevDiffuse = SAMPLE_TEXTURE2D(_SubSurfaceScatteringDiffuse, sampler_SubSurfaceScatteringDiffuse, tex_coord);
-    float depth = SampleSceneDepth(tex_coord); // 或使用 _DepthRT 如果自定义
-    if (depth <= 0.0) return prevDiffuse; // 无深度，返回原值
+    float3 prevDiffuse = SAMPLE_TEXTURE2D(_SubSurfaceScatteringDiffuse, sampler_SubSurfaceScatteringDiffuse, tex_coord).rgb;
+    // if (d.a <= 0.0)
+    //     return prevDiffuse;
 
-    float3 currPos = ReconstructPositionWS(tex_coord, depth);
-    // SSS 系数 (d = _Scattering.rgb, alpha = mask, 这里假设 mask=1)
-    if (max(max(d.x, d.y), d.z) <= 0.0) return prevDiffuse;
-
-    // 重要采样沿最大组件
+    // Importance sample along the largest RGB component
     float dmax = max(max(d.x, d.y), d.z);
-    float dz = dmax / -currPos.z; // 缩放采样分布
+    
+    float dmin = min(min(d.x, d.y), d.z);
+    float3 currPos = ReconstructPositionVS(tex_coord);
+    // Scale sample distribution with z
+    float dz = dmax / -currPos.z;
+    float4x4 projectionMatrix = UNITY_MATRIX_P;
+    // if (projectionMatrix[0][0] * projectionMatrix[1][1] * dz < 1e-4)
+    //     return prevDiffuse;
 
-    float3 X = float3(0, 0, 0), W = float3(0, 0, 0);
-
-    int _NumSamples = 32;
-    for (float i = 0.0; i < _NumSamples; i++)
+    float3 X = 0.0, W = 0.0;
+    int nbSamples = 16;
+    
+    for (float i = 0.0; i < nbSamples; i++)
     {
-        // Fibonacci 螺旋
-        float r = (i + 0.5) / _NumSamples;
+        // Fibonacci spiral
+        float r = (i + 0.5) / nbSamples;
         float t = 2.0 * PI * (GOLD * i + noise);
-
         float icdf = samples_icdf(r, dz);
-        float2 offset = icdf * float2(cos(t) / screenSize.x, sin(t) / screenSize.y); // 转换为 UV 偏移
-        float2 sampleUV = tex_coord + offset;
-
-        // 采样 diffuse 和 depth
-        float4 sampleDiffuse = SAMPLE_TEXTURE2D(_SubSurfaceScatteringDiffuse, sampler_SubSurfaceScatteringDiffuse, sampleUV);
-        float sampleDepth = SampleSceneDepth(sampleUV);
-
-        // 重建 3D 位置并计算距离
-        float3 samplePos = ReconstructPositionWS(sampleUV, sampleDepth);
-        float dist = distance(currPos, samplePos);
-
+        float2 Coords = tex_coord + icdf * float2(projectionMatrix[0][0] * cos(t), projectionMatrix[1][1] * sin(t));
+        float4 D = SAMPLE_TEXTURE2D(_SubSurfaceScatteringDiffuse, sampler_SubSurfaceScatteringDiffuse, Coords);
+        // Re-weight samples with the scene 3D distance and SSS profile instead of 2D importance sampling weights
+        // SSS mask in alpha
+        float dist = distance(currPos, ReconstructPositionVS(Coords));
         if (dist > 0.0)
         {
-            // 重新加权：使用 SSS PDF 而非 2D 重要采样权重
-            float3 weights = sampleDiffuse.a / samples_pdf(icdf, dz) * sss_pdf(dist, d);
-            // 假设 alpha 是 SSS mask
-            X += weights * sampleDiffuse.rgb;
-            W += weights;
+            float3 Weights = D.a / samples_pdf(icdf, dz) * sss_pdf(dist, d.rgb);
+            X += Weights * D.rgb;
+            W += Weights;
         }
     }
-    // 归一化并返回
-    return half4(
+
+    return float3(
         W.r < 1e-5 ? prevDiffuse.r : X.r / W.r,
         W.g < 1e-5 ? prevDiffuse.g : X.g / W.g,
-        W.b < 1e-5 ? prevDiffuse.b : X.b / W.b,
-        prevDiffuse.a
-    );
+        W.b < 1e-5 ? prevDiffuse.b : X.b / W.b);
 }
 
 half4 LisPassFragment(Varyings input, half facing : VFACE) : SV_TARGET
@@ -297,14 +306,13 @@ half4 LisPassFragment(Varyings input, half facing : VFACE) : SV_TARGET
     half3 irradianceSpecular = IrradianceSpecularNew(inputData, surfaceData);
     half4 finalColor;
 
-
     half3 sample_diffuse = SAMPLE_TEXTURE2D(_SubSurfaceScatteringDiffuse, sampler_SubSurfaceScatteringDiffuse, screenUV);
     half4 sssCoeffs = GetScatteringCoeffs(input.uv.xy);
     uint3 loadCoords = uint3(uint2(input.positionCS.xy) & 0xFF, 0);
-    float noise = _BlueNoiseTex.Load(loadCoords).x;
+    float noise = _BlueNoiseTex.Load(loadCoords).x * 2 - 1;
     half3 diffuseContrib = surfaceData.diffColor * sssConvolve(screenUV, sssCoeffs, noise);
     finalColor.rgb = diffuseContrib + lightSpecular + (irradianceSpecular) * surfaceData.occlusion;
-    return half4(sssConvolve(screenUV, sssCoeffs, noise).rgb, alpha);
+    return half4(finalColor.rgb, alpha);
 }
 
 half4 SubSurfaceScatteringPassFragment(Varyings input, half facing : VFACE) : SV_TARGET
@@ -366,7 +374,15 @@ half4 SubSurfaceScatteringPassFragment(Varyings input, half facing : VFACE) : SV
     half3 irradianceDiffuse = IrradianceDiffuse(inputData, surfaceData);
     half3 irradianceSpecular = IrradianceSpecularNew(inputData, surfaceData);
     half4 finalColor;
-    finalColor.rgb = lightDiffuseColor + irradianceDiffuse * surfaceData.occlusion;
-    return half4(finalColor.rgb, alpha);
+
+    half3 totalLight = half3(0.0, 0.0, 0.0);
+    for (int i = 0; i < GetAdditionalLightsCount(); ++i)
+    {
+        Light light = GetAdditionalLight(i,positionWS);
+        totalLight += LightDiffuse(inputData, surfaceData, light);
+    }
+    totalLight += LightDiffuse(inputData, surfaceData, mainLight);
+    totalLight +=  irradianceDiffuse * surfaceData.occlusion;
+    return half4(totalLight.rgb, alpha);
 }
 #endif

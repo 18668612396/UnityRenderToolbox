@@ -17,7 +17,7 @@ Shader "RenderToolbox/Standard"
         // 次表面散射
         _EnableSubSurfaceScattering("Enable SubSurface Scattering", Float) = 0
         _ScatteringMap("Scattering Map", 2D) = "white" {}
-        _ScatteringColor("Scattering Color", Color) = (1,1,1,1)
+        [HDR]_ScatteringColor("Scattering Color", Color) = (1,1,1,1)
         _ScatteringIntensity("Scattering Intensity", Range(0,10)) = 1
         
         // ----- 细节贴图阵列 -----

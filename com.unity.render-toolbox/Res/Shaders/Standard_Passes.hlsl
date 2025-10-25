@@ -129,6 +129,7 @@ Varyings LitPassVertex(Attributes input)
     output.screenPos = ComputeScreenPos(output.positionCS);
     return output;
 }
+TEXTURE2D(_BlueNoiseTex);
 
 half4 GetScatteringCoeffs(float2 uv)
 {
@@ -157,13 +158,11 @@ float samples_icdf(float x, float d)
     return -3.0 * log(x) * d;
 }
 
-TEXTURE2D(_BlueNoiseTex);
-
 // --- 所需的全局变量 (在 Pass 中声明) ---
 
 // 您必须从 C# 脚本传入这个矩阵：
 // shader.SetMatrix("projectionInverseMatrix", camera.projectionMatrix.inverse);
-float4x4 projectionInverseMatrix; 
+float4x4 projectionInverseMatrix;
 // --- 翻译后的函数 ---
 
 float3 ReconstructPositionWS(float2 tex_coord)
@@ -178,10 +177,13 @@ float3 ReconstructPositionWS(float2 tex_coord)
     float3 worldPos = ComputeWorldSpacePosition(tex_coord, depth, UNITY_MATRIX_I_VP);
     return worldPos;
 }
+
 float3 ReconstructPositionVS(float2 tex_coord)
 {
-    return TransformWorldToView(ReconstructPositionWS(tex_coord));
+    float3 vs = TransformWorldToView(ReconstructPositionWS(tex_coord));
+    return vs;
 }
+
 float3 sssGetPosition(float2 tex_coord)
 {
     float depth = SampleSceneDepth(tex_coord); // 或使用 _DepthRT 如果自定义
@@ -198,8 +200,10 @@ float3 sssGetPosition(float2 tex_coord)
     // 示例: 可视化 positionWS（转换为颜色以调试）
     return viewPos; // 偏移到 [0, 1] 范围显示
 }
-float3 sssConvolve(float2 screenUV,float4 d, float noise)
+
+float3 sssConvolve(float2 screenUV, float4 d, float noise)
 {
+    
     float2 screenSize = _ScreenParams.xy;
     const float GOLD = 0.618034;
     float2 tex_coord = screenUV;
@@ -209,32 +213,38 @@ float3 sssConvolve(float2 screenUV,float4 d, float noise)
 
     // Importance sample along the largest RGB component
     float dmax = max(max(d.x, d.y), d.z);
-    
     float dmin = min(min(d.x, d.y), d.z);
     float3 currPos = ReconstructPositionVS(tex_coord);
     // Scale sample distribution with z
-    float dz = dmax / -currPos.z;
-    float4x4 projectionMatrix = UNITY_MATRIX_P;
-    // if (projectionMatrix[0][0] * projectionMatrix[1][1] * dz < 1e-4)
-    //     return prevDiffuse;
-
-    float3 X = 0.0, W = 0.0;
-    int nbSamples = 16;
+    float dz = dmax / -(currPos.z);
     
+    float4x4 projectionMatrix = UNITY_MATRIX_P;
+    
+    #if UNITY_UV_STARTS_AT_TOP  // 定义在 DirectX-like 平台，表示 Y 翻转
+    float scaleY = -1.0;  // 补偿负 m11
+    #else
+    float scaleY = 1.0;
+    #endif
+    float projScale = projectionMatrix[0][0] * (projectionMatrix[1][1] * scaleY);  // 使产品总是正
+    // if (projScale * dz < 1e-4)
+    //     return prevDiffuse;
+    
+    float3 X = 0.0, W = 0.0;
+    int nbSamples = 64;
     for (float i = 0.0; i < nbSamples; i++)
     {
         // Fibonacci spiral
         float r = (i + 0.5) / nbSamples;
         float t = 2.0 * PI * (GOLD * i + noise);
         float icdf = samples_icdf(r, dz);
-        float2 Coords = tex_coord + icdf * float2(projectionMatrix[0][0] * cos(t), projectionMatrix[1][1] * sin(t));
+        float2 Coords = tex_coord + icdf * float2(projectionMatrix[0][0] * cos(t), projectionMatrix[1][1] * sin(t) * _ProjectionParams.x);
         float4 D = SAMPLE_TEXTURE2D(_SubSurfaceScatteringDiffuse, sampler_SubSurfaceScatteringDiffuse, Coords);
         // Re-weight samples with the scene 3D distance and SSS profile instead of 2D importance sampling weights
         // SSS mask in alpha
-        float dist = distance(currPos, ReconstructPositionVS(Coords));
+        float dist = distance(currPos, ReconstructPositionVS(Coords)) * 100;// 这里乘以100是因为Substance的单位是cm, 所以他的算法也是基于cm的
         if (dist > 0.0)
         {
-            float3 Weights = D.a / samples_pdf(icdf, dz) * sss_pdf(dist, d.rgb);
+            float3 Weights = D.a / samples_pdf(icdf, dz) * sss_pdf(dist, d.rgb * 100);
             X += Weights * D.rgb;
             W += Weights;
         }
@@ -378,11 +388,11 @@ half4 SubSurfaceScatteringPassFragment(Varyings input, half facing : VFACE) : SV
     half3 totalLight = half3(0.0, 0.0, 0.0);
     for (int i = 0; i < GetAdditionalLightsCount(); ++i)
     {
-        Light light = GetAdditionalLight(i,positionWS);
+        Light light = GetAdditionalLight(i, positionWS);
         totalLight += LightDiffuse(inputData, surfaceData, light);
     }
     totalLight += LightDiffuse(inputData, surfaceData, mainLight);
-    totalLight +=  irradianceDiffuse * surfaceData.occlusion;
+    totalLight += irradianceDiffuse * surfaceData.occlusion;
     return half4(totalLight.rgb, alpha);
 }
 #endif

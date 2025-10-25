@@ -2,6 +2,9 @@ Shader "RenderToolbox/Standard"
 {
     Properties
     {
+        // 材质类型 0-
+        [Enum(MetallicSmoothness,0,MetallicSmoothness SSS,1)]_MaterialType("Material Type", Float) = 0
+        // ----- 主贴图 -----
         _EnableAlphaTest("Enable Alpha Test", Float) = 0
         _Cutoff("Alpha Cutoff", Range(0,1)) = 0.5
         _BaseMap("Main Texture", 2D) = "white" {}

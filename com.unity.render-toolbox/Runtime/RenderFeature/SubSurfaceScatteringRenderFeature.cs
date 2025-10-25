@@ -60,7 +60,7 @@ public class SubSurfaceScatteringRenderPass : ScriptableRenderPass
             // a. 法线纹理描述符和句柄 (Handle)
             TextureDesc sssDesc = new TextureDesc(cameraTargetDesc.width, cameraTargetDesc.height)
             {
-                colorFormat = GraphicsFormat.A2B10G10R10_UNormPack32, // 这是 R10G10B10A2 对应的 GraphicsFormat
+                colorFormat = GraphicsFormat.R16G16B16A16_SNorm, // 这是 R10G10B10A2 对应的 GraphicsFormat
                 name = "_SubSurfaceScatteringDiffuse"
             };
             passData.sss = renderGraph.CreateTexture(sssDesc);

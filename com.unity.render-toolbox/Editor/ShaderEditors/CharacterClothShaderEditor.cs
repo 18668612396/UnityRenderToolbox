@@ -16,7 +16,7 @@ public class CharacterClothShaderEditor : ModularShaderEditor
         // 2. 在初始化元组时，传入对应的 ShaderKeyword 实例
         { ("第二层纹理", "_EnableSecond", "_KEYWORD_SECOND"), DrawSecondModule },
         { ("细节纹理数组", "_EnableDetailArray", "_ENABLE_DETAIL_ARRAY"), DrawDetailArray },
-        { ("次表面散射", "_EnableSubSurfaceScattering", ""), DrawSubSurfaceScattering},
+        { ("次表面散射", "_EnableSubSurfaceScattering", "_ENABLE_SSS"), DrawSubSurfaceScattering},
     };
 
 
@@ -24,6 +24,15 @@ public class CharacterClothShaderEditor : ModularShaderEditor
     protected override void OnBeforeDefaultGUI(MaterialEditor materialEditor)
     {
         ModelInputs(materialEditor);
+        //关闭pass
+        if (FindProperty("_EnableSubSurfaceScattering").floatValue > 0.5)
+        {
+            material.SetShaderPassEnabled("SubSurfaceScatteringDiffuse", true);
+        }
+        else
+        {
+            material.SetShaderPassEnabled("SubSurfaceScatteringDiffuse", false);
+        }
     }
 
     protected override void OnMainDefaultGUI(MaterialEditor materialEditor)
@@ -70,6 +79,7 @@ public class CharacterClothShaderEditor : ModularShaderEditor
 
     public void ModelInputs(MaterialEditor materialEditor)
     {
+        materialEditor.ShaderProperty(FindProperty("_MaterialType"), "材质类型");
         materialEditor.ShaderProperty(FindProperty("_Cull"), "剔除模式");
         EditorGUI.BeginChangeCheck();
         materialEditor.ShaderProperty(FindProperty("_RenderMode"), "渲染模式");

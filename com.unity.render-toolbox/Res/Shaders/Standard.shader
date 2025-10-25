@@ -3,7 +3,7 @@ Shader "RenderToolbox/Standard"
     Properties
     {
         // 材质类型 0-
-        [Enum(MetallicSmoothness,0,MetallicSmoothness SSS,1)]_MaterialType("Material Type", Float) = 0
+        [Enum(Normal,0,SSS,1)]_MaterialType("Material Type", Float) = 0
         // ----- 主贴图 -----
         _EnableAlphaTest("Enable Alpha Test", Float) = 0
         _Cutoff("Alpha Cutoff", Range(0,1)) = 0.5
@@ -18,7 +18,7 @@ Shader "RenderToolbox/Standard"
         _SecondNormalMap("Normal Map", 2D) = "bump" {}
         _SecondMaskMap("Mask Map", 2D) = "black" {}
         // 次表面散射
-        _EnableSubSurfaceScattering("Enable SubSurface Scattering", Float) = 0
+        [Toggle(_ENABLE_SSS)]_EnableSubSurfaceScattering("Enable SubSurface Scattering", Float) = 0
         _ScatteringMap("Scattering Map", 2D) = "white" {}
         [HDR]_ScatteringColor("Scattering Color", Color) = (1,1,1,1)
         _ScatteringIntensity("Scattering Intensity", Range(0,10)) = 1
@@ -116,7 +116,10 @@ Shader "RenderToolbox/Standard"
             HLSLPROGRAM
             #pragma vertex LitPassVertex
             #pragma fragment LisPassFragment
+            // -------------------------------------
+            #pragma shader_feature_local _ENABLE_SSS
 
+            // -------------------------------------
             #include "Standard_Inputs.hlsl"
             #include "Standard_Passes.hlsl"
             ENDHLSL

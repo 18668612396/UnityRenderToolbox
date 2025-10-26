@@ -1,0 +1,201 @@
+%YAML 1.1
+%TAG !u! tag:yousandi.cn,2023:
+--- !u!114 &-6431246466511922896
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 7
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: m_hair1
+  m_Shader: {fileID: 4800000, guid: 01113b01c994bc94ebca79059023b3ae, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: 2447
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _BaseMap:
+        m_Texture: {fileID: 2800000, guid: c5e939b45de85ea48991bd62cfd8daed, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailNormalMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailTextureArray:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _FaceMaskMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 2800000, guid: 5f53f1f540d135047b1032ddf6d4c3e1, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MaskMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NormalMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SecondBaseMap:
+        m_Texture: {fileID: 2800000, guid: 87be4c3b712b5fa43ac8b958a8c7cbd1, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SecondMaskMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SecondNormalMap:
+        m_Texture: {fileID: 2800000, guid: 65c9ed9a6e6720d40a85b794dfccfaff, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _texcoord:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _Alpha: 0.942
+    - _AlphaClip: 0
+    - _AlphaToMask: 0
+    - _AnisotropyDensity: 1
+    - _AnisotropyIntensity: 1.25
+    - _AnisotropyOffset: 0.5
+    - _AnisotropyPower: 5
+    - _AnisotropyTile: 1
+    - _Blend: 0
+    - _BlendOp: 0
+    - _CharacterHairMode: 1
+    - _ColorIntensity: 1
+    - _Cull: 2
+    - _CullMode: 1
+    - _CustomEffectType: 0
+    - _Cutoff: 0.67
+    - _DetailArea0_BaseSmoothness: 1
+    - _DetailArea0_DetailIndex: 0
+    - _DetailArea0_DetailSmoothness: 0
+    - _DetailArea0_DiffuseIntensity: 1
+    - _DetailArea0_Enable: 0
+    - _DetailArea0_NormalIndex: 0
+    - _DetailArea0_NormalIntensity: 1
+    - _DetailArea0_Smoothness: 0
+    - _DetailArea1_BaseSmoothness: 1
+    - _DetailArea1_DetailIndex: 2
+    - _DetailArea1_DetailSmoothness: 0
+    - _DetailArea1_DiffuseIntensity: 1
+    - _DetailArea1_Enable: 0
+    - _DetailArea1_NormalIndex: 0
+    - _DetailArea1_NormalIntensity: 1
+    - _DetailArea1_Smoothness: 0
+    - _DetailArea2_BaseSmoothness: 1
+    - _DetailArea2_DetailColorIntensity: 1
+    - _DetailArea2_DetailIndex: 3
+    - _DetailArea2_DetailSmoothness: 0
+    - _DetailArea2_DiffuseIntensity: 1
+    - _DetailArea2_Enable: 0
+    - _DetailArea2_NormalIndex: 0
+    - _DetailArea2_NormalIntensity: 1
+    - _DetailArea2_Smoothness: 0
+    - _DetailArea3_BaseSmoothness: 1
+    - _DetailArea3_DetailColorIntensity: 1
+    - _DetailArea3_DetailIndex: 4
+    - _DetailArea3_DetailSmoothness: 0
+    - _DetailArea3_DiffuseIntensity: 1
+    - _DetailArea3_Enable: 0
+    - _DetailArea3_NormalIndex: 0
+    - _DetailArea3_NormalIntensity: 1
+    - _DetailArea3_Smoothness: 0
+    - _DstBlend: 0
+    - _DstBlendA: 0
+    - _DstBlendAlpha: 0
+    - _Enable: 0
+    - _EnableAdvancedShading: 0
+    - _EnableDetailArray: 0
+    - _EnableSecond: 0
+    - _EnvironmentMode: 0
+    - _FresnelIntensity: 5
+    - _FresnelPower: 0
+    - _InvisibleEnable: 0
+    - _InvisibleProgress: 0
+    - _InvisibleRimFactFix: 0.6
+    - _InvisibleRimIntensity: 2
+    - _InvisibleRimPower: 0
+    - _IsUI: 0
+    - _LightAngle: 0
+    - _LightPower: 15.24
+    - _Mode: 0
+    - _OutlineDstBlend: 0
+    - _OutlineSrcBlend: 1
+    - _QueueOffset: 0
+    - _RenderMode: 0
+    - _RenderQueueOffset: -3
+    - _RimLightIntensity: 1
+    - _RimLightPower: 3
+    - _SampleGI: 0
+    - _SecondColorIntensity: 1
+    - _ShowMode: 0
+    - _SrcBlend: 1
+    - _SrcBlendA: 1
+    - _SrcBlendAlpha: 1
+    - _Surface: 0
+    - _UseAlphaTest: 0
+    - _ZWrite: 1
+    - __dirty: 1
+    m_Colors:
+    - _AnisotropyColor: {r: 1, g: 1, b: 1, a: 1}
+    - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0.028301895, g: 0.028301895, b: 0.028301895, a: 1}
+    - _DetailArea0_BaseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _DetailArea0_BaseMapMatrix: {r: 1, g: 0, b: 0, a: 1}
+    - _DetailArea0_DetailColor: {r: 1, g: 1, b: 1, a: 1}
+    - _DetailArea0_DiffuseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _DetailArea0_NormalMapMatrix: {r: 1, g: 0, b: 0, a: 1}
+    - _DetailArea1_BaseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _DetailArea1_BaseMapMatrix: {r: 1, g: 0, b: 0, a: 1}
+    - _DetailArea1_DetailColor: {r: 1, g: 1, b: 1, a: 1}
+    - _DetailArea1_DiffuseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _DetailArea1_NormalMapMatrix: {r: 1, g: 0, b: 0, a: 1}
+    - _DetailArea2_BaseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _DetailArea2_BaseMapMatrix: {r: 1, g: 0, b: 0, a: 1}
+    - _DetailArea2_DetailColor: {r: 1, g: 1, b: 1, a: 1}
+    - _DetailArea2_DiffuseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _DetailArea2_NormalMapMatrix: {r: 1, g: 0, b: 0, a: 1}
+    - _DetailArea3_BaseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _DetailArea3_BaseMapMatrix: {r: 1, g: 0, b: 0, a: 1}
+    - _DetailArea3_DetailColor: {r: 1, g: 1, b: 1, a: 1}
+    - _DetailArea3_DiffuseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _DetailArea3_NormalMapMatrix: {r: 1, g: 0, b: 0, a: 1}
+    - _InvisibleColor: {r: 1.8901961, g: 0.43137255, b: 0, a: 1}
+    - _LightColor: {r: 0, g: 0, b: 0, a: 0}
+    - _MainColor: {r: 0.028301895, g: 0.028301895, b: 0.028301895, a: 1}
+    - _ProbeHdr: {r: 4.6, g: 1, b: 0, a: 0}
+    - _RimLightColor: {r: 1, g: 1, b: 1, a: 1}
+    - _SecondColor: {r: 1, g: 1, b: 1, a: 1}
+  m_BuildTextureStacks: []

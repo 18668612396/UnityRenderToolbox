@@ -155,7 +155,7 @@ half4 LisPassFragment(Varyings input, half facing : VFACE) : SV_TARGET
     half alpha = sample_base.a * _Color.a;
     #if _ENABLE_ALPHA_TEST_ON
     {
-        clip(sample_base.w - _Cutoff);
+        clip(alpha - _Cutoff);
     }
     #endif
 
@@ -192,10 +192,10 @@ half4 LisPassFragment(Varyings input, half facing : VFACE) : SV_TARGET
     float3 baseColor = sample_base.rgb * _Color.rgb * _ColorIntensity;
     baseColor *= lerp(detailBaseColor, detailColor.rgb, detailMask);
     baseColor = lerp(baseColor, sample_secondBase.rgb, sample_secondBase.a * _EnableSecond); //混合第二层贴图
-    float smoothness = sample_mask.r;
+    float smoothness = sample_mask.r * _Smoothness;
     smoothness = lerp(smoothness * baseSmoothness, detailSmoothness, detailMask); //混合细节贴图
     smoothness = lerp(smoothness, sample_secondMask.r, sample_secondBase.a * _EnableSecond); //混合第二层贴图
-    float metallic = sample_mask.g;
+    float metallic = sample_mask.g * _Metallic;
     metallic = lerp(metallic, sample_secondMask.g, sample_secondBase.a * _EnableSecond); //混合第二层贴图
     float occlusion = sample_normal.b;
     occlusion = lerp(occlusion, sample_secondMask.b, sample_secondBase.a * _EnableSecond); //混合第二层贴图
@@ -224,7 +224,6 @@ half4 LisPassFragment(Varyings input, half facing : VFACE) : SV_TARGET
     specularLighting += LightSpecular(inputData, surfaceData, mainLight);
     specularLighting += IrradianceSpecular(inputData, surfaceData);
     specularLighting *= surfaceData.occlusion;
-
     finalColor.rgb = diffuseLighting + specularLighting;
     return half4(finalColor.rgb, alpha);
 }
@@ -233,10 +232,11 @@ half4 SubSurfaceScatteringPassFragment(Varyings input, half facing : VFACE) : SV
 {
     //采样基础贴图
     half alpha = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, input.uv.xy).a * _Color.a;
-    if (_UseAlphaTest > 0.5)
-    {
+    #if _ENABLE_ALPHA_TEST_ON
+        {
         clip(alpha - _Cutoff);
-    }
+        }
+    #endif
     half4 sample_normal = SAMPLE_TEXTURE2D(_NormalMap, sampler_NormalMap, input.uv.xy);
     half4 sample_mask = SAMPLE_TEXTURE2D(_MaskMap, sampler_MaskMap, input.uv.xy);
     //计算切线空间法线

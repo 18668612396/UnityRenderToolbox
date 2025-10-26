@@ -7,11 +7,10 @@
 TEXTURECUBE(_ReflectionCube);
 SAMPLER(sampler_ReflectionCube);
 
-
+#if _ENABLE_SSS
 //###############################################################################
 //                      次表面散射算法合集      
 //###############################################################################
-
 half4 GetScatteringCoeffs(float2 uv)
 {
     // half3 sss = get2DSample(_ScatteringMap, uv, disableFragment, cDefaultColor.mScattering).r * _ScatteringIntensity * _ScatteringColor;
@@ -66,12 +65,12 @@ float GetBlueNoise(float2 screenUV, float seed)
 float3 ReconstructPositionWS(float2 tex_coord)
 {
     // A. 采样深度 (使用此宏来保证跨平台兼容性)
-    #if UNITY_REVERSED_Z
+#if UNITY_REVERSED_Z
     real depth = SampleSceneDepth(tex_coord);
-    #else
+#else
     // Adjust z to match NDC for OpenGL
     real depth = lerp(UNITY_NEAR_CLIP_VALUE, 1, SampleSceneDepth(UV));
-    #endif
+#endif
     float3 worldPos = ComputeWorldSpacePosition(tex_coord, depth, UNITY_MATRIX_I_VP);
     return worldPos;
 }
@@ -99,11 +98,11 @@ float3 sssConvolve(RenderToolboxInputData inputData, float4 scattering, float no
 
     float4x4 projectionMatrix = UNITY_MATRIX_P;
 
-    #if UNITY_UV_STARTS_AT_TOP  // 定义在 DirectX-like 平台，表示 Y 翻转
+#if UNITY_UV_STARTS_AT_TOP  // 定义在 DirectX-like 平台，表示 Y 翻转
     float scaleY = -1.0; // 补偿负 m11
-    #else
+#else
     float scaleY = 1.0;
-    #endif
+#endif
     float projScale = projectionMatrix[0][0] * (projectionMatrix[1][1] * scaleY); // 使产品总是正
     // if (projScale * dz < 1e-4)
     //     return prevDiffuse;
@@ -133,8 +132,7 @@ float3 sssConvolve(RenderToolboxInputData inputData, float4 scattering, float no
         W.g < 1e-5 ? prevDiffuse.g : X.g / W.g,
         W.b < 1e-5 ? prevDiffuse.b : X.b / W.b);
 }
-
-
+#endif
 
 //###############################################################################
 //                      灯光漫反射算法合集                                      
@@ -200,13 +198,13 @@ half3 fresnel(float vdh, half3 F0)
     return F0 + ((half3)1.0 - F0) * sphg;
 }
 
-half3 LightSpecular(RenderToolboxInputData inputData, RenderToolboxSurfaceData surfaceData, Light light)
+half3 LightSpecular(float3 normalWS, float3 viewDirWS, half3 specColor, half roughness, Light light)
 {
-    half3 Vn = inputData.viewDirWS;
+    half3 Vn = viewDirWS;
     half3 Ln = light.direction;
-    half3 Nn = inputData.normalWS;
-    half3 Ks = surfaceData.specColor;
-    float Roughness = surfaceData.roughness;
+    half3 Nn = normalWS;
+    half3 Ks = specColor;
+    float Roughness = roughness;
     half3 Hn = normalize(Vn + Ln);
     float vdh = max(0.00001, dot(Vn, Hn));
     float ndh = max(0.00001, dot(Nn, Hn));
@@ -215,15 +213,24 @@ half3 LightSpecular(RenderToolboxInputData inputData, RenderToolboxSurfaceData s
     return fresnel(vdh, Ks) * (normal_distrib(ndh, Roughness) * visibility(ndl, ndv, Roughness) / 4.0) * ndl * light.color * light.shadowAttenuation * light.distanceAttenuation;
 }
 
+half3 LightSpecular(RenderToolboxInputData inputData, RenderToolboxSurfaceData surfaceData, Light light)
+{
+    return LightSpecular(inputData.normalWS,  inputData.viewDirWS, surfaceData.specColor, surfaceData.roughness,light);
+}
+
 //###############################################################################
 //                      环境光光漫反射算法合集                                      
 //###############################################################################
-float3 IrradianceDiffuse(RenderToolboxInputData inputData, RenderToolboxSurfaceData surfaceData)
+float3 IrradianceDiffuse(float3 normalWS, half3 diffColor, half3 specColor)
 {
-    half3 GI = SampleSH(inputData.normalWS);
-    return surfaceData.diffColor * (1 - surfaceData.specColor) * GI;
+    half3 GI = SampleSH(normalWS);
+    return diffColor * (1 - specColor) * GI;
 }
 
+float3 IrradianceDiffuse(RenderToolboxInputData inputData, RenderToolboxSurfaceData surfaceData)
+{
+    return IrradianceDiffuse(inputData.normalWS, surfaceData.diffColor, surfaceData.specColor);
+}
 //###############################################################################
 //                      环境光光镜面反射算法合集                                      
 //###############################################################################
@@ -236,10 +243,23 @@ float3 lut_function(float roughness, float ndotv, float3 f0)
     float3 lut = f0.xyz * scale.xxx + bias;
     return lut;
 }
+half3 IrradianceSpecular(TEXTURECUBE_PARAM(cubemap,sampler_cubemap), float3 reflectDirWS, float ndotv, float roughness, float3 specColor)
+{
+    //此算法来自战双帕弥什
+    half3 lut = lut_function(roughness, ndotv, specColor);
+    float mip = roughness * (1.7 - 0.7 * roughness) * UNITY_SPECCUBE_LOD_STEPS;
+    float4 indirectionCube = SAMPLE_TEXTURECUBE_LOD(cubemap, sampler_cubemap, reflectDirWS, mip);
+    half3 reflectCube = indirectionCube.xyz * indirectionCube.w * lut;
+    return reflectCube;
+}
+
+half3 IrradianceSpecular(TEXTURECUBE_PARAM(cubemap,sampler_cubemap), RenderToolboxInputData inputData, RenderToolboxSurfaceData surfaceData)
+{
+    return IrradianceSpecular(cubemap, sampler_cubemap, inputData.reflectDirWS, inputData.ndotv, surfaceData.roughness, surfaceData.specColor);
+}
 
 half3 IrradianceSpecular(RenderToolboxInputData inputData, RenderToolboxSurfaceData surfaceData)
 {
-    //此算法来自战双帕弥什
     half3 lut = lut_function(surfaceData.roughness, inputData.ndotv, surfaceData.specColor);
     float mip = surfaceData.roughness * (1.7 - 0.7 * surfaceData.roughness) * UNITY_SPECCUBE_LOD_STEPS;
     float4 indirectionCube = SAMPLE_TEXTURECUBE_LOD(_ReflectionCube, sampler_ReflectionCube, inputData.reflectDirWS, mip);
@@ -250,6 +270,14 @@ half3 IrradianceSpecular(RenderToolboxInputData inputData, RenderToolboxSurfaceD
 //###############################################################################
 //                      光照合成算法合集                                      
 //###############################################################################
+#if _ENABLE_SSS
+// 综合漫反射光照（带次表面散射）
+half3 GetDiffuseLighting(RenderToolboxInputData inputData, RenderToolboxSurfaceData surfaceData, float4 scattering)
+{
+    float noise = GetBlueNoise(inputData.positionCS.xy * 0.01, 0.0);
+    return surfaceData.diffColor * sssConvolve(inputData, scattering, noise);
+}
+#endif
 // 综合漫反射光照
 half3 GetDiffuseLighting(RenderToolboxInputData inputData, RenderToolboxSurfaceData surfaceData)
 {
@@ -263,17 +291,12 @@ half3 GetDiffuseLighting(RenderToolboxInputData inputData, RenderToolboxSurfaceD
     //其他光源漫反射部分
     for (int i = 0; i < GetAdditionalLightsCount(); i++)
     {
-        Light additionalLight = GetAdditionalLight(i,inputData.positionWS);
+        Light additionalLight = GetAdditionalLight(i, inputData.positionWS);
         totalLight += LightDiffuse(inputData, surfaceData, additionalLight);
     }
     return totalLight;
 }
-// 综合漫反射光照（带次表面散射）
-half3 GetDiffuseLighting(RenderToolboxInputData inputData, RenderToolboxSurfaceData surfaceData, float4 scattering)
-{
-    float noise = GetBlueNoise(inputData.positionCS.xy * 0.01, 0.0);
-    return surfaceData.diffColor * sssConvolve(inputData, scattering, noise);
-}
+
 // 综合镜面反射光照
 half3 GetSpecularLighting(RenderToolboxInputData inputData, RenderToolboxSurfaceData surfaceData)
 {

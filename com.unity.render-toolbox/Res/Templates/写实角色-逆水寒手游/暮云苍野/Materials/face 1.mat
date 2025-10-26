@@ -1,0 +1,333 @@
+%YAML 1.1
+%TAG !u! tag:yousandi.cn,2023:
+--- !u!114 &-6431246466511922896
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 7
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: face 1
+  m_Shader: {fileID: 4800000, guid: 883cc08b95b84fa4499b42f89d3378ad, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _3SRampMap:
+        m_Texture: {fileID: 2800000, guid: 2588aa7b74b5f194abc552554093d454, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BaseMap:
+        m_Texture: {fileID: 2800000, guid: 23c01c5d2b4b6184f9edbfa9c02b214e, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BlingNoiseTex:
+        m_Texture: {fileID: 2800000, guid: 50da5f0f5efb0084b84cd66b8ce9d1ec, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Custom_SpecCube0:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailNormal:
+        m_Texture: {fileID: 2800000, guid: 381727cee5ca00141866cfd17a66f48d, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailNormalMap:
+        m_Texture: {fileID: 2800000, guid: 8ebfe3160bda5c746893f750b6e29b77, type: 3}
+        m_Scale: {x: 30, y: 30}
+        m_Offset: {x: 0, y: 0}
+    - _DetailTextureArray:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EyeBrowMap1:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _FaceMaskMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _FixedShadowmap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _LipNoiseTex:
+        m_Texture: {fileID: 2800000, guid: 50da5f0f5efb0084b84cd66b8ce9d1ec, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainNormal:
+        m_Texture: {fileID: 2800000, guid: c2b7f3caaa7a82b43ab507dc3154c968, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 2800000, guid: 23c01c5d2b4b6184f9edbfa9c02b214e, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MakeUpTex:
+        m_Texture: {fileID: 2800000, guid: 50da5f0f5efb0084b84cd66b8ce9d1ec, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MaskMap:
+        m_Texture: {fileID: 2800000, guid: 99edf44512d05a54db2eafa2b8b5e408, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MaskMap2:
+        m_Texture: {fileID: 2800000, guid: 5de381fd212d52f40aa6a7a7b0b0a942, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NormalMap:
+        m_Texture: {fileID: 2800000, guid: c2b7f3caaa7a82b43ab507dc3154c968, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _RimLightMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _RimLightRamp:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _RoleShadowMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SecondBaseMap:
+        m_Texture: {fileID: 2800000, guid: 87be4c3b712b5fa43ac8b958a8c7cbd1, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SecondMaskMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SecondNormalMap:
+        m_Texture: {fileID: 2800000, guid: 65c9ed9a6e6720d40a85b794dfccfaff, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SubsurfaceLut:
+        m_Texture: {fileID: 2800000, guid: 18054433a5e96704f99bd4ce40886e15, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _TintColorMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _3Sthick: -1
+    - _Alpha: 1
+    - _AlphaClip: 0
+    - _AlphaToMask: 0
+    - _Blend: 0
+    - _BlendOp: 0
+    - _BlingIntensity: 0
+    - _BlingPower: 2.5
+    - _BrownHorizontal: -0.96
+    - _BrownRemap: 0
+    - _BrownU: -3.1
+    - _BrownV: 5.33
+    - _BrownVertical: -2.86
+    - _ColorIntensity: 2
+    - _Cull: 2
+    - _CustomEffectType: 0
+    - _Cutoff: 0.5
+    - _DetailArea0_BaseSmoothness: 0.5
+    - _DetailArea0_DetailIndex: 0
+    - _DetailArea0_DetailSmoothness: 0.5
+    - _DetailArea0_DiffuseIntensity: 1
+    - _DetailArea0_Enable: 0
+    - _DetailArea0_NormalIndex: 0
+    - _DetailArea0_NormalIntensity: 1
+    - _DetailArea0_Smoothness: 0
+    - _DetailArea1_BaseSmoothness: 0.5
+    - _DetailArea1_DetailIndex: 2
+    - _DetailArea1_DetailSmoothness: 0.5
+    - _DetailArea1_DiffuseIntensity: 1
+    - _DetailArea1_Enable: 0
+    - _DetailArea1_NormalIndex: 0
+    - _DetailArea1_NormalIntensity: 1
+    - _DetailArea1_Smoothness: 0
+    - _DetailArea2_BaseSmoothness: 0.5
+    - _DetailArea2_DetailColorIntensity: 1
+    - _DetailArea2_DetailIndex: 3
+    - _DetailArea2_DetailSmoothness: 0.5
+    - _DetailArea2_DiffuseIntensity: 1
+    - _DetailArea2_Enable: 0
+    - _DetailArea2_NormalIndex: 0
+    - _DetailArea2_NormalIntensity: 1
+    - _DetailArea2_Smoothness: 0
+    - _DetailArea3_BaseSmoothness: 0.5
+    - _DetailArea3_DetailColorIntensity: 1
+    - _DetailArea3_DetailIndex: 4
+    - _DetailArea3_DetailSmoothness: 0.5
+    - _DetailArea3_DiffuseIntensity: 1
+    - _DetailArea3_Enable: 0
+    - _DetailArea3_NormalIndex: 0
+    - _DetailArea3_NormalIntensity: 1
+    - _DetailArea3_Smoothness: 0
+    - _DetailNormalIntensity: 1
+    - _DetailSmoothnessIntensity: 0.171
+    - _DstBlend: 0
+    - _DstBlendA: 0
+    - _DstBlendAlpha: 0
+    - _EnableDetailArray: 0
+    - _EnableSecond: 0
+    - _EnvironmentMode: 0
+    - _FlashValue: 0
+    - _FlashWidth: 0
+    - _FrePower: 0.49
+    - _FreScale: 1.18
+    - _HLIntensity: 3
+    - _HLRoughness: 0.7
+    - _HLRoughnessOffset: 0.327
+    - _IndDiffuseIntensity: 0.436
+    - _IndSpeIntensity: 0.1
+    - _IndSpeMin: 0.6
+    - _IndSpecularSmoothUp: 0
+    - _IndSpemax: 4
+    - _IndirDiffuse: 0.3
+    - _InvisibleEnable: 0
+    - _InvisibleProgress: 0
+    - _InvisibleRimFactFix: 0.6
+    - _InvisibleRimIntensity: 2
+    - _InvisibleRimPower: 0
+    - _IsUI: 0
+    - _LightAngle: 0
+    - _LightMapGrayCorrect: 0
+    - _LipHighlightPower: 100
+    - _LipSparkleIntensity: 0
+    - _LipSparklePower: 2.5
+    - _MakeUpUVScale: 2
+    - _MakeUpUVX: 0.25
+    - _MakeUpUVY: 0.32
+    - _MaskBFactor: 1
+    - _OutlineBloom: 0.04
+    - _OutlineBrightness: 1
+    - _OutlineDstBlend: 0
+    - _OutlineSrcBlend: 1
+    - _OutlineWidth: 1
+    - _OutlineZOffset: 0
+    - _QueueOffset: 0
+    - _RenderMode: 0
+    - _RenderQueueOffset: 0
+    - _RimLightIntensity: 1
+    - _RimLightPower: 3
+    - _RimlightFade: 0.1
+    - _RimlightRange: 0.444
+    - _RimlightThreshold: 0.18
+    - _RoleMaxLight: 0.5
+    - _RoleShadowLimit: 0
+    - _SSSAmbientStrength: 0
+    - _SSSAmbientStrengthNew: 0.3
+    - _SampleGI: 0
+    - _ScaleDetailNormal: 1
+    - _SecondColorIntensity: 1
+    - _ShowMode: 0
+    - _SkinLight: 3.5
+    - _SmoothLightIntensity: 0
+    - _SmoothLightPower: 1
+    - _SoftNDotLIntensity: 1
+    - _SoftNDotLMax: 0.61
+    - _SoftNDotLMin: 0.5
+    - _SoftNDotLOffset: 0.371
+    - _SoftNDotLPow: 0
+    - _SoftNDotLScale: 0.352
+    - _SrcBlend: 1
+    - _SrcBlendA: 1
+    - _SrcBlendAlpha: 1
+    - _SubsurfaceThickness: 1
+    - _Surface: 0
+    - _TilingDetailNormal: 15
+    - _UseAlphaTest: 0
+    - _UseBackLight: 0
+    - _UseCustomReflProbe: 0
+    - _UseCustomSHAmbient: 0
+    - _UseRoleShadow: 0
+    - _ZWrite: 1
+    m_Colors:
+    - _3SSkinBaseColor: {r: 1, g: 0.79160374, b: 0.7783019, a: 1}
+    - _BackLightColor: {r: 0, g: 0, b: 0, a: 0}
+    - _BackLightDir: {r: 0, g: 0, b: 0, a: 0}
+    - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _BlingColor: {r: 1, g: 1, b: 1, a: 1}
+    - _BrownColor: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 1, g: 0.8454088, b: 0.7783019, a: 1}
+    - _Custom_SHAb: {r: 0.0040121838, g: -0.043899965, b: 0.014325699, a: 0.28515726}
+    - _Custom_SHAg: {r: 0.002222375, g: -0.14896499, b: 0.007549412, a: 0.3119004}
+    - _Custom_SHAr: {r: 0.0013106155, g: -0.19694455, b: 0.004343114, a: 0.3066892}
+    - _Custom_SHBb: {r: 0.002193916, g: 0.008231383, b: 0.05370277, a: 0.01682205}
+    - _Custom_SHBg: {r: 0.0012274091, g: 0.0046096286, b: 0.045422606, a: 0.013088531}
+    - _Custom_SHBr: {r: 0.00076330063, g: 0.0028506601, b: 0.03305037, a: 0.009406802}
+    - _Custom_SHC: {r: 0.016691355, g: 0.022775326, b: 0.024681604, a: 1}
+    - _DetailArea0_BaseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _DetailArea0_BaseMapMatrix: {r: 1, g: 0, b: 0, a: 1}
+    - _DetailArea0_DetailColor: {r: 1, g: 1, b: 1, a: 1}
+    - _DetailArea0_DiffuseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _DetailArea0_NormalMapMatrix: {r: 1, g: 0, b: 0, a: 1}
+    - _DetailArea1_BaseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _DetailArea1_BaseMapMatrix: {r: 1, g: 0, b: 0, a: 1}
+    - _DetailArea1_DetailColor: {r: 1, g: 1, b: 1, a: 1}
+    - _DetailArea1_DiffuseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _DetailArea1_NormalMapMatrix: {r: 1, g: 0, b: 0, a: 1}
+    - _DetailArea2_BaseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _DetailArea2_BaseMapMatrix: {r: 1, g: 0, b: 0, a: 1}
+    - _DetailArea2_DetailColor: {r: 1, g: 1, b: 1, a: 1}
+    - _DetailArea2_DiffuseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _DetailArea2_NormalMapMatrix: {r: 1, g: 0, b: 0, a: 1}
+    - _DetailArea3_BaseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _DetailArea3_BaseMapMatrix: {r: 1, g: 0, b: 0, a: 1}
+    - _DetailArea3_DetailColor: {r: 1, g: 1, b: 1, a: 1}
+    - _DetailArea3_DiffuseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _DetailArea3_NormalMapMatrix: {r: 1, g: 0, b: 0, a: 1}
+    - _EmissionColor: {r: 0, g: 0, b: 0, a: 0}
+    - _FakeLightColor: {r: 0.5943396, g: 0.5943396, b: 0.5943396, a: 0.2}
+    - _FakeLightDir: {r: 0.000000086771145, g: 0.12186935, b: 0.9925462, a: 1}
+    - _FlashColor: {r: 0, g: 0, b: 0, a: 0}
+    - _FreColor: {r: 0.5660378, g: 0.5660378, b: 0.5660378, a: 1}
+    - _HLColor: {r: 1, g: 1, b: 1, a: 1}
+    - _InvisibleColor: {r: 1.3356262, g: 0.68820333, b: 0, a: 1}
+    - _LightMapHSV: {r: 0, g: 0, b: 0, a: 0}
+    - _LipHighLightColor: {r: 0, g: 0, b: 0, a: 0}
+    - _LipNoiseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _MainColor: {r: 0.9772473, g: 0.9772473, b: 0.9772473, a: 1}
+    - _MakeUpColor: {r: 0, g: 0, b: 0, a: 0}
+    - _MinLightColor: {r: 0, g: 0, b: 0, a: 0.75}
+    - _OutlineAdjustParams1: {r: 5, g: 10, b: 13, a: 0}
+    - _OutlineAdjustParams2: {r: 1, g: 3, b: 0, a: 0}
+    - _OutlineColor: {r: 0, g: 0, b: 0, a: 0}
+    - _OutlineFadeColor: {r: 0.6, g: 0.6, b: 0.6, a: 1}
+    - _ProbeHdr: {r: 4.6, g: 1, b: 0, a: 0}
+    - _ReflectionProbeHSV: {r: 0, g: 0, b: 0, a: 0}
+    - _RimLightColor: {r: 1, g: 1, b: 1, a: 1}
+    - _RimlightColor: {r: 0.27, g: 0.27, b: 0.27, a: 0}
+    - _RimlightDir1: {r: -0.891, g: 0.454, b: 0, a: 0}
+    - _RimlightDir2: {r: -1, g: 0, b: 0, a: 0}
+    - _RoleAmbientColor: {r: 0.66223466, g: 0.66223466, b: 0.66223466, a: 0}
+    - _SSSAmbientColor: {r: 1, g: 1, b: 1, a: 1}
+    - _SecondColor: {r: 1, g: 1, b: 1, a: 1}
+    - _ShadowTint: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  m_BuildTextureStacks: []

@@ -2,8 +2,6 @@ Shader "RenderToolbox/Standard"
 {
     Properties
     {
-        // 材质类型 0-
-        [Enum(Normal,0,SSS,1)]_MaterialType("Material Type", Float) = 0
         // ----- 主贴图 -----
         [Toggle(_ENABLE_ALPHA_TEST_ON)]_EnableAlphaTest("Enable Alpha Test", Float) = 0
         _Cutoff("Alpha Cutoff", Range(0,1)) = 0.5
@@ -11,7 +9,10 @@ Shader "RenderToolbox/Standard"
         _Color("Main Color", Color) = (1,1,1,1)
         _ColorIntensity("Color Intensity", Range(0,5)) = 1
         _MaskMap("Mask Map", 2D) = "blue" {}
+        _Smoothness("Smoothness", Range(0,1)) = 0.5
+        _Metallic("Metallic", Range(0,1)) = 0.0
         _NormalMap("Normal Map", 2D) = "bump" {}
+        _NormalIntensity("Normal Intensity", Range(0,1)) = 1
         // ----- 第二套贴图 -----
         [Toggle]_EnableSecond("Enable Second Texture", Float) = 0
         _SecondBaseMap("Main Texture", 2D) = "white" {}

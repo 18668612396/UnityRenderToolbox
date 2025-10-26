@@ -30,7 +30,12 @@ public class StandardShaderEditor : ModularShaderEditor
     {
         materialEditor.TexturePropertySingleLine(new GUIContent("主贴图", "RGB:主颜色,A:透明通道"), FindProperty("_BaseMap"), FindProperty("_Color"), FindProperty("_ColorIntensity"));
         materialEditor.TexturePropertySingleLine(new GUIContent("遮罩贴图", "R:光滑度,G:金属度,B:暂无,A:(自发光/特效)遮罩"), FindProperty("_MaskMap"));
+        EditorGUI.indentLevel = 2;
+        materialEditor.ShaderProperty(FindProperty("_Smoothness"), "光滑度");
+        materialEditor.ShaderProperty(FindProperty("_Metallic"), "金属度");
+        EditorGUI.indentLevel = 0;
         materialEditor.TexturePropertySingleLine(new GUIContent("法线贴图", "RG:法线XY,B:环境遮蔽"), FindProperty("_NormalMap"));
+        materialEditor.TextureScaleOffsetProperty(FindProperty("_BaseMap"));
     }
 
     private void DrawEmissionModule(MaterialEditor materialEditor)
@@ -50,6 +55,7 @@ public class StandardShaderEditor : ModularShaderEditor
         materialEditor.TexturePropertySingleLine(new GUIContent("刺绣主纹理"), FindProperty("_SecondBaseMap"), FindProperty("_SecondColor"), FindProperty("_SecondColorIntensity"));
         materialEditor.TexturePropertySingleLine(new GUIContent("刺绣遮罩"), FindProperty("_SecondMaskMap"));
         materialEditor.TexturePropertySingleLine(new GUIContent("刺绣法线"), FindProperty("_SecondNormalMap"));
+        materialEditor.TextureScaleOffsetProperty(FindProperty("_SecondBaseMap"));
     }
 
     private enum RGB_R_G_B_A
@@ -143,7 +149,6 @@ public class StandardShaderEditor : ModularShaderEditor
         materialEditor.ShaderProperty(FindProperty("_Cull"), "剔除模式");
         EditorGUI.BeginChangeCheck();
         materialEditor.ShaderProperty(FindProperty("_RenderMode"), "渲染模式");
-        FindProperty("_RenderQueueOffset").floatValue = EditorGUILayout.IntSlider("渲染队列偏移", (int)FindProperty("_RenderQueueOffset").floatValue, -15, 15);
         // if (EditorGUI.EndChangeCheck())
         // {
         if (FindProperty("_RenderMode").floatValue == 0)
@@ -154,25 +159,29 @@ public class StandardShaderEditor : ModularShaderEditor
                 materialEditor.ShaderProperty(FindProperty("_Cutoff"), "Alpha裁剪阈值");
                 RenderingBlendUtils.CalculateRenderBlendMode(RenderingBlendUtils.BlendMode.Replace,
                     out var src, out var dst, out var srcA, out var dstA);
-                material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.AlphaTest + (int)FindProperty("_RenderQueueOffset").floatValue;
+                material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.AlphaTest;
                 FindProperty("_SrcBlend").floatValue = (float)src;
                 FindProperty("_DstBlend").floatValue = (float)dst;
                 FindProperty("_SrcBlendA").floatValue = (float)srcA;
                 FindProperty("_DstBlendA").floatValue = (float)dstA;
+                FindProperty("_ZWrite").floatValue = 1.0f;
             }
             else
             {
                 RenderingBlendUtils.CalculateRenderBlendMode(RenderingBlendUtils.BlendMode.Replace,
                     out var src, out var dst, out var srcA, out var dstA);
-                material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Geometry + (int)FindProperty("_RenderQueueOffset").floatValue;
+                material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Geometry;
                 FindProperty("_SrcBlend").floatValue = (float)src;
                 FindProperty("_DstBlend").floatValue = (float)dst;
                 FindProperty("_SrcBlendA").floatValue = (float)srcA;
                 FindProperty("_DstBlendA").floatValue = (float)dstA;
+                FindProperty("_ZWrite").floatValue = 1.0f;
             }
         }
         else
         {
+            FindProperty("_RenderQueueOffset").floatValue = EditorGUILayout.IntSlider("渲染队列偏移", (int)FindProperty("_RenderQueueOffset").floatValue, -15, 15);
+            materialEditor.ShaderProperty(FindProperty("_ZWrite"), "深度写入");
             RenderingBlendUtils.CalculateRenderBlendMode(RenderingBlendUtils.BlendMode.Alpha,
                 out var src, out var dst, out var srcA, out var dstA);
             material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent + (int)FindProperty("_RenderQueueOffset").floatValue;

@@ -2,11 +2,12 @@
 #define NEMO_CHARACTER_CLOTH_INPUT_INCLUDED
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 CBUFFER_START(UnityPerMaterial)
-    half _IsUI;
-    half _UseAlphaTest;
     half _Cutoff;
     half4 _Color;
-    float _ColorIntensity;
+    half _ColorIntensity;
+    half _Smoothness;
+    half _Metallic;
+    half _NormalIntensity;
 
     half _EnableSecond;
     half4 _SecondColor;
@@ -38,34 +39,34 @@ CBUFFER_START(UnityPerMaterial)
     float4 _DetailArea2_NormalMapMatrix;
     float4 _DetailArea3_NormalMapMatrix;
 
-    float _DetailArea0_BaseSmoothness;
-    float _DetailArea1_BaseSmoothness;
-    float _DetailArea2_BaseSmoothness;
-    float _DetailArea3_BaseSmoothness;
+    half _DetailArea0_BaseSmoothness;
+    half _DetailArea1_BaseSmoothness;
+    half _DetailArea2_BaseSmoothness;
+    half _DetailArea3_BaseSmoothness;
 
-    float _DetailArea0_DetailSmoothness;
-    float _DetailArea1_DetailSmoothness;
-    float _DetailArea2_DetailSmoothness;
-    float _DetailArea3_DetailSmoothness;
+    half _DetailArea0_DetailSmoothness;
+    half _DetailArea1_DetailSmoothness;
+    half _DetailArea2_DetailSmoothness;
+    half _DetailArea3_DetailSmoothness;
 
-    float _DetailArea0_CustomFactor;
-    float _DetailArea1_CustomFactor;
-    float _DetailArea2_CustomFactor;
-    float _DetailArea3_CustomFactor;
+    half _DetailArea0_CustomFactor;
+    half _DetailArea1_CustomFactor;
+    half _DetailArea2_CustomFactor;
+    half _DetailArea3_CustomFactor;
 
     int _DetailArea0_NormalIndex;
     int _DetailArea1_NormalIndex;
     int _DetailArea2_NormalIndex;
     int _DetailArea3_NormalIndex;
 
-    float _DetailArea0_NormalIntensity;
-    float _DetailArea1_NormalIntensity;
-    float _DetailArea2_NormalIntensity;
-    float _DetailArea3_NormalIntensity;
-    float _DetailArea0_Enable;
-    float _DetailArea1_Enable;
-    float _DetailArea2_Enable;
-    float _DetailArea3_Enable;
+    half _DetailArea0_NormalIntensity;
+    half _DetailArea1_NormalIntensity;
+    half _DetailArea2_NormalIntensity;
+    half _DetailArea3_NormalIntensity;
+    half _DetailArea0_Enable;
+    half _DetailArea1_Enable;
+    half _DetailArea2_Enable;
+    half _DetailArea3_Enable;
 
     half4 _ScatteringColor;
     half _ScatteringIntensity;

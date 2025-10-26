@@ -1,11 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using RenderToolbox.Editor;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
-public class CharacterClothShaderEditor : ModularShaderEditor
+public class StandardShaderEditor : ModularShaderEditor
 {
     protected override string BeforeModuleName => "";
     protected override string MainModuleName => "Main";
@@ -14,62 +15,122 @@ public class CharacterClothShaderEditor : ModularShaderEditor
     protected override Dictionary<(string ModuleName, string PropertyName, string keyword), Action<MaterialEditor>> ModuleProperties => new Dictionary<(string ModuleName, string PropertyName, string keyword), Action<MaterialEditor>>
     {
         // 2. 在初始化元组时，传入对应的 ShaderKeyword 实例
-        { ("第二层纹理", "_EnableSecond", "_KEYWORD_SECOND"), DrawSecondModule },
-        { ("细节纹理数组", "_EnableDetailArray", "_ENABLE_DETAIL_ARRAY"), DrawDetailArray },
-        { ("次表面散射", "_EnableSubSurfaceScattering", "_ENABLE_SSS"), DrawSubSurfaceScattering},
+        { ("第二层纹理", "_EnableSecond", "KEYWORD_SECOND"), DrawSecondModule },
+        { ("细节纹理数组", "_EnableDetailArray", "ENABLE_DETAIL_ARRAY"), DrawDetailArrayModule },
+        { ("自发光", "_EnableEmission", ""), DrawEmissionModule },
+        { ("流动特效", "_EnableEffect", "ENABLE_EFFECT"), DrawEffectModule },
     };
-
-
 
     protected override void OnBeforeDefaultGUI(MaterialEditor materialEditor)
     {
         ModelInputs(materialEditor);
-        //关闭pass
-        if (FindProperty("_EnableSubSurfaceScattering").floatValue > 0.5)
-        {
-            material.SetShaderPassEnabled("SubSurfaceScatteringDiffuse", true);
-        }
-        else
-        {
-            material.SetShaderPassEnabled("SubSurfaceScatteringDiffuse", false);
-        }
     }
 
     protected override void OnMainDefaultGUI(MaterialEditor materialEditor)
     {
-        materialEditor.TexturePropertySingleLine(new GUIContent("主贴图"), FindProperty("_BaseMap"), FindProperty("_Color"), FindProperty("_ColorIntensity"));
-        materialEditor.TexturePropertySingleLine(new GUIContent("遮罩贴图", "R:高光范围,G:静态阴影,B:高光强度,A:材质通道"), FindProperty("_MaskMap"));
-        materialEditor.TexturePropertySingleLine(new GUIContent("法线贴图"), FindProperty("_NormalMap"));
+        materialEditor.TexturePropertySingleLine(new GUIContent("主贴图", "RGB:主颜色,A:透明通道"), FindProperty("_BaseMap"), FindProperty("_Color"), FindProperty("_ColorIntensity"));
+        materialEditor.TexturePropertySingleLine(new GUIContent("遮罩贴图", "R:光滑度,G:金属度,B:暂无,A:(自发光/特效)遮罩"), FindProperty("_MaskMap"));
+        materialEditor.TexturePropertySingleLine(new GUIContent("法线贴图", "RG:法线XY,B:环境遮蔽"), FindProperty("_NormalMap"));
+    }
+
+    private void DrawEmissionModule(MaterialEditor materialEditor)
+    {
+        EditorGUILayout.BeginHorizontal();
+        EditorGUILayout.LabelField("自发光颜色", GUILayout.Width(100));
+        {
+            FindProperty("_EmissionColor").colorValue = EditorGUILayout.ColorField(FindProperty("_EmissionColor").colorValue);
+            FindProperty("_EmissionIntensity").floatValue = EditorGUILayout.Slider(FindProperty("_EmissionIntensity").floatValue, 0f, 50f);
+        }
+        EditorGUILayout.EndHorizontal();
     }
 
     private void DrawSecondModule(MaterialEditor materialEditor)
     {
         EditorGUI.indentLevel = 0;
-        materialEditor.TexturePropertySingleLine(new GUIContent("刺绣主纹理"), FindProperty("_SecondBaseMap"));
+        materialEditor.TexturePropertySingleLine(new GUIContent("刺绣主纹理"), FindProperty("_SecondBaseMap"), FindProperty("_SecondColor"), FindProperty("_SecondColorIntensity"));
         materialEditor.TexturePropertySingleLine(new GUIContent("刺绣遮罩"), FindProperty("_SecondMaskMap"));
         materialEditor.TexturePropertySingleLine(new GUIContent("刺绣法线"), FindProperty("_SecondNormalMap"));
     }
-    private void DrawSubSurfaceScattering(MaterialEditor materialEditor)
+
+    private enum RGB_R_G_B_A
     {
-        EditorGUI.indentLevel = 0;
-        materialEditor.TexturePropertySingleLine(new GUIContent("次表面散射贴图"),
-            FindProperty("_ScatteringMap"));
-        materialEditor.ShaderProperty(FindProperty("_ScatteringColor"), "散射颜色");
-        materialEditor.ShaderProperty(FindProperty("_ScatteringIntensity"), "散射强度");
-            
+        RGB = -1,
+        R = 0,
+        G = 1,
+        B = 2,
+        A = 3
     }
+
+    private enum R_G_B_A
+    {
+        R = 0,
+        G = 1,
+        B = 2,
+        A = 3
+    }
+
+    private void DrawEffectModule(MaterialEditor materialEditor)
+    {
+        //提示
+        EditorGUILayout.HelpBox("注意：每个纹理的流动速度依靠其Offset值来控制", MessageType.Info);
+
+        materialEditor.ShaderProperty(FindProperty("_EffectBlendMode"), "混合模式");
+        materialEditor.ShaderProperty(FindProperty("_EffectMultiEmissionMask"), "叠加自发光通道为遮罩");
+        materialEditor.TexturePropertySingleLine(new GUIContent("遮罩纹理"), FindProperty("_EffectMaskMap"),FindProperty("_EffectMaskMapChannel"));
+        
+        EditorGUILayout.BeginHorizontal();
+        {
+            // EditorGUILayout.BeginHorizontal();
+            
+            // EditorGUILayout.LabelField("遮罩通道", GUILayout.Width(80));
+            FindProperty("_EffectMaskMapChannel").floatValue = (int)(R_G_B_A)EditorGUILayout.EnumPopup((R_G_B_A)(int)FindProperty("_EffectMaskMapChannel").floatValue);
+            // EditorGUILayout.EndHorizontal();
+        }
+        EditorGUILayout.EndHorizontal();
+        
+        EditorGUILayout.BeginVertical("helpbox");
+        {
+            materialEditor.TexturePropertySingleLine(new GUIContent("主纹理"), FindProperty("_EffectBaseMap"), FindProperty("_EffectColor"), FindProperty("_EffectColorIntensity"));
+            materialEditor.TextureScaleOffsetProperty(FindProperty("_EffectBaseMap"));
+            EditorGUILayout.BeginHorizontal();
+            {
+                // EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.LabelField("颜色通道", GUILayout.Width(80));
+                FindProperty("_EffectBaseMapColorChannel").floatValue = (int)(RGB_R_G_B_A)EditorGUILayout.EnumPopup((RGB_R_G_B_A)(int)FindProperty("_EffectBaseMapColorChannel").floatValue);
+                // EditorGUILayout.EndHorizontal();
+                // EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.LabelField("透明通道", GUILayout.Width(80));
+                FindProperty("_EffectBaseMapAlphaChannel").floatValue = (int)(R_G_B_A)EditorGUILayout.EnumPopup((R_G_B_A)(int)FindProperty("_EffectBaseMapAlphaChannel").floatValue);
+                // EditorGUILayout.EndHorizontal();
+            }
+            EditorGUILayout.EndHorizontal();
+        }
+        EditorGUILayout.EndVertical();
+
+        EditorGUILayout.BeginVertical("helpbox");
+        {
+            materialEditor.ShaderProperty(FindProperty("_EnableDistortionMap"), "使用扭曲纹理");
+            if (FindProperty("_EnableDistortionMap").floatValue > 0.5f)
+            {
+                EditorGUILayout.HelpBox("必须使用法线贴图以达到扭曲效果。", MessageType.Info);
+                materialEditor.TexturePropertySingleLine(new GUIContent("扭曲纹理"), FindProperty("_EffectDistortionMap"));
+                materialEditor.TextureScaleOffsetProperty(FindProperty("_EffectDistortionMap"));
+                materialEditor.ShaderProperty(FindProperty("_EffectDistortionBaseMapIntensity"), "主纹理扭曲强度");
+            }
+        }
+        EditorGUILayout.EndVertical();
+    }
+
 
     private int m_SelectedTab = 0;
     private readonly string[] m_TabNames = { "第一层", "第二层", "第三层", "第四层" };
 
-    private void DrawDetailArray(MaterialEditor materialEditor)
+    private void DrawDetailArrayModule(MaterialEditor materialEditor)
     {
         EditorGUI.indentLevel = 0;
         materialEditor.TexturePropertySingleLine(new GUIContent("纹理数组"), FindProperty("_DetailTextureArray"));
         // m_SelectedTab = GUILayout.Toolbar(m_SelectedTab, m_TabNames, GUILayout.Height(20));
         m_SelectedTab = GUILayout.Toolbar(m_SelectedTab, m_TabNames, GUILayout.Height(24));
-
-
         DrawDetailAreaTab(materialEditor, m_SelectedTab);
     }
 
@@ -79,7 +140,6 @@ public class CharacterClothShaderEditor : ModularShaderEditor
 
     public void ModelInputs(MaterialEditor materialEditor)
     {
-        materialEditor.ShaderProperty(FindProperty("_MaterialType"), "材质类型");
         materialEditor.ShaderProperty(FindProperty("_Cull"), "剔除模式");
         EditorGUI.BeginChangeCheck();
         materialEditor.ShaderProperty(FindProperty("_RenderMode"), "渲染模式");
@@ -134,12 +194,37 @@ public class CharacterClothShaderEditor : ModularShaderEditor
         {
             EditorGUILayout.BeginVertical("box");
             {
-                FindProperty($"_DetailArea{i}_DetailIndex").floatValue =
-                    EditorGUILayout.IntSlider("Mask索引", (int)FindProperty($"_DetailArea{i}_DetailIndex").floatValue, 0, FindProperty("_DetailTextureArray").textureValue != null ? (FindProperty("_DetailTextureArray").textureValue as Texture2DArray).depth - 1 : 0);
+                ///////////////////////////////////////
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.LabelField("基础纹理索引", GUILayout.Width(100));
+                {
+                    FindProperty($"_DetailArea{i}_DetailIndex").floatValue =
+                        EditorGUILayout.IntSlider("", (int)FindProperty($"_DetailArea{i}_DetailIndex").floatValue, 0, FindProperty("_DetailTextureArray").textureValue != null ? (FindProperty("_DetailTextureArray").textureValue as Texture2DArray).depth - 1 : 0);
+                }
+                EditorGUILayout.EndHorizontal();
+                ///////////////////////////////////////
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.LabelField("颜色(底部)", GUILayout.Width(100));
+                {
+                    materialEditor.ShaderProperty(FindProperty($"_DetailArea{i}_BaseColor"), new GUIContent(""));
+                }
+                EditorGUILayout.EndHorizontal();
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.LabelField("颜色(细节)", GUILayout.Width(100));
+                {
+                    materialEditor.ShaderProperty(FindProperty($"_DetailArea{i}_DetailColor"), new GUIContent(""));
+                }
+                EditorGUILayout.EndHorizontal();
 
-                materialEditor.ShaderProperty(FindProperty($"_DetailArea{i}_DiffuseColor"), "颜色");
-                materialEditor.ShaderProperty(FindProperty($"_DetailArea{i}_DiffuseIntensity"), "颜色强度");
-                materialEditor.ShaderProperty(FindProperty($"_DetailArea{i}_Smoothness"), "光滑度");
+
+                ///////////////////////////////////////
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.LabelField("光滑度(底部/细节)", GUILayout.Width(100));
+                {
+                    FindProperty($"_DetailArea{i}_BaseSmoothness").floatValue = EditorGUILayout.Slider(FindProperty($"_DetailArea{i}_BaseSmoothness").floatValue, 0f, 1f);
+                    FindProperty($"_DetailArea{i}_DetailSmoothness").floatValue = EditorGUILayout.Slider(FindProperty($"_DetailArea{i}_DetailSmoothness").floatValue, 0f, 1f);
+                }
+                EditorGUILayout.EndHorizontal();
                 DrawDetailRotationScale(materialEditor, $"_DetailArea{i}_BaseMapMatrix");
             }
             EditorGUILayout.EndVertical();
@@ -155,11 +240,22 @@ public class CharacterClothShaderEditor : ModularShaderEditor
             GUIStyle headerStyle = new GUIStyle(EditorStyles.boldLabel);
             headerStyle.fontSize = 20;
             EditorGUILayout.LabelField("法线贴图设置", headerStyle, GUILayout.Height(40));
-
+            ///////////////////////////////////////
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("法线纹理索引", GUILayout.Width(100));
+            {
+                FindProperty($"_DetailArea{i}_NormalIndex").floatValue =
+                    EditorGUILayout.IntSlider("", (int)FindProperty($"_DetailArea{i}_NormalIndex").floatValue, 0, FindProperty("_DetailTextureArray").textureValue != null ? (FindProperty("_DetailTextureArray").textureValue as Texture2DArray).depth - 1 : 0);
+            }
+            EditorGUILayout.EndHorizontal();
+            ///////////////////////////////////////
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("法线强度", GUILayout.Width(100));
+            {
+                materialEditor.ShaderProperty(FindProperty($"_DetailArea{i}_NormalIntensity"), new GUIContent(""));
+            }
+            EditorGUILayout.EndHorizontal();
             //绘制一个slider 范围是纹理数组的深度
-            FindProperty($"_DetailArea{i}_NormalIndex").floatValue =
-                EditorGUILayout.IntSlider("Normal索引", (int)FindProperty($"_DetailArea{i}_NormalIndex").floatValue, 0, FindProperty("_DetailTextureArray").textureValue != null ? (FindProperty("_DetailTextureArray").textureValue as Texture2DArray).depth - 1 : 0);
-            materialEditor.ShaderProperty(FindProperty($"_DetailArea{i}_NormalIntensity"), new GUIContent("Normal强度"));
             DrawDetailRotationScale(materialEditor, $"_DetailArea{i}_NormalMapMatrix");
             EditorGUILayout.EndVertical();
 
@@ -178,11 +274,17 @@ public class CharacterClothShaderEditor : ModularShaderEditor
         var (scale, rotation) = GetRotationScaleFromMatrix(FindProperty(propertyName).vectorValue);
         EditorGUILayout.BeginHorizontal();
         {
-            EditorGUILayout.LabelField("缩放", GUILayout.Width(40));
+            EditorGUILayout.LabelField("缩放", GUILayout.Width(100));
             scale = EditorGUILayout.Vector2Field("", scale);
         }
         EditorGUILayout.EndHorizontal();
-        rotation = EditorGUILayout.Slider("旋转", rotation, 0, 359.99f);
+        EditorGUILayout.BeginHorizontal();
+        EditorGUILayout.LabelField("旋转", GUILayout.Width(100));
+        {
+            rotation = EditorGUILayout.Slider("", rotation, 0, 359.99f);
+        }
+        EditorGUILayout.EndHorizontal();
+
         //将修改后的旋转和缩放值合成回矩阵
         FindProperty(propertyName).vectorValue = GetMatrixFromRotationScale(rotation, scale);
     }
@@ -262,7 +364,20 @@ public class CharacterClothShaderEditor : ModularShaderEditor
             {
                 Texture2D tempTex = new Texture2D(array.width, array.height, array.format, false);
                 Graphics.CopyTexture(array, index, 0, tempTex, 0, 0);
-                GUILayout.Label(tempTex, GUILayout.Width(size), GUILayout.Height(size));
+                // GUILayout.Label(tempTex, GUILayout.Width(size), GUILayout.Height(size));
+                if (GUILayout.Button(tempTex, GUILayout.Width(size), GUILayout.Height(size)))
+                {
+                    //点击后在项目窗口选中该纹理
+                    string path = AssetDatabase.GetAssetPath(array);
+                    Texture2DArrayImporter importer = AssetImporter.GetAtPath(path) as Texture2DArrayImporter;
+                    if (importer != null)
+                    {
+                        var texture = importer.GetTextureAtSlice(index);
+                        // Selection.activeObject = texture;
+                        EditorGUIUtility.PingObject(texture);
+                    }
+                }
+
                 UnityEngine.Object.DestroyImmediate(tempTex);
             }
             else

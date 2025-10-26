@@ -7,23 +7,26 @@ CBUFFER_START(UnityPerMaterial)
     half _Cutoff;
     half4 _Color;
     float _ColorIntensity;
-    half _EnableSecond;
 
-    half _DetailGroup;
+    half _EnableSecond;
+    half4 _SecondColor;
+    half _SecondColorIntensity;
+
+    half _EnableDetailArray;
     int _DetailArea0_DetailIndex;
     int _DetailArea1_DetailIndex;
     int _DetailArea2_DetailIndex;
     int _DetailArea3_DetailIndex;
 
-    half4 _DetailArea0_DiffuseColor;
-    half4 _DetailArea1_DiffuseColor;
-    half4 _DetailArea2_DiffuseColor;
-    half4 _DetailArea3_DiffuseColor;
+    half4 _DetailArea0_DetailColor;
+    half4 _DetailArea1_DetailColor;
+    half4 _DetailArea2_DetailColor;
+    half4 _DetailArea3_DetailColor;
 
-    half _DetailArea0_DiffuseIntensity;
-    half _DetailArea1_DiffuseIntensity;
-    half _DetailArea2_DiffuseIntensity;
-    half _DetailArea3_DiffuseIntensity;
+    half4 _DetailArea0_BaseColor;
+    half4 _DetailArea1_BaseColor;
+    half4 _DetailArea2_BaseColor;
+    half4 _DetailArea3_BaseColor;
 
     float4 _DetailArea0_BaseMapMatrix;
     float4 _DetailArea1_BaseMapMatrix;
@@ -35,10 +38,15 @@ CBUFFER_START(UnityPerMaterial)
     float4 _DetailArea2_NormalMapMatrix;
     float4 _DetailArea3_NormalMapMatrix;
 
-    float _DetailArea0_Smoothness;
-    float _DetailArea1_Smoothness;
-    float _DetailArea2_Smoothness;
-    float _DetailArea3_Smoothness;
+    float _DetailArea0_BaseSmoothness;
+    float _DetailArea1_BaseSmoothness;
+    float _DetailArea2_BaseSmoothness;
+    float _DetailArea3_BaseSmoothness;
+
+    float _DetailArea0_DetailSmoothness;
+    float _DetailArea1_DetailSmoothness;
+    float _DetailArea2_DetailSmoothness;
+    float _DetailArea3_DetailSmoothness;
 
     float _DetailArea0_CustomFactor;
     float _DetailArea1_CustomFactor;
@@ -59,14 +67,11 @@ CBUFFER_START(UnityPerMaterial)
     float _DetailArea2_Enable;
     float _DetailArea3_Enable;
 
-    half4 _RimLightColor;
-    half _RimLightPower;
-    half _RimLightIntensity;
-
     half4 _ScatteringColor;
     half _ScatteringIntensity;
 CBUFFER_END
-    half4 _SubSurfaceScatteringDiffuse_TexelSize;
+
+half4 _SubSurfaceScatteringDiffuse_TexelSize;
 
 TEXTURE2D(_BaseMap);
 SAMPLER(sampler_BaseMap);
@@ -84,7 +89,6 @@ TEXTURE2D(_SubSurfaceScatteringDiffuse);
 SAMPLER(sampler_SubSurfaceScatteringDiffuse);
 TEXTURE2D(_ScatteringMap);
 SAMPLER(sampler_ScatteringMap);
-
 
 
 TEXTURE2D_ARRAY(_DetailTextureArray);

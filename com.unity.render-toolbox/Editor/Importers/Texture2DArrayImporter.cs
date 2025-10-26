@@ -440,5 +440,13 @@ namespace RenderToolbox.Editor
             ProjectWindowUtil.CreateAssetWithContent(directoryPath,
                 "This file represents a Texture2DArray asset for Unity.\nYou need the 'Texture2DArray Import Pipeline' package available at https://github.com/pschraut/UnityTexture2DArrayImportPipeline to properly import this file in Unity.");
         }
+
+        public Texture2D GetTextureAtSlice(int index)
+        {
+            // Returns the texture assigned at the specified slice index.
+            if (index < 0 || index >= m_Textures.Count)
+                return null;
+            return m_Textures[index];
+        }
     }
 }

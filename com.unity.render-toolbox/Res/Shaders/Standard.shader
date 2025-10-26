@@ -15,6 +15,8 @@ Shader "RenderToolbox/Standard"
         // ----- 第二套贴图 -----
         [Toggle]_EnableSecond("Enable Second Texture", Float) = 0
         _SecondBaseMap("Main Texture", 2D) = "white" {}
+        _SecondColor("Main Color", Color) = (1,1,1,1)
+        _SecondColorIntensity("Color Intensity", Range(0,5)) = 1
         _SecondNormalMap("Normal Map", 2D) = "bump" {}
         _SecondMaskMap("Mask Map", 2D) = "black" {}
         // 次表面散射
@@ -22,16 +24,16 @@ Shader "RenderToolbox/Standard"
         _ScatteringMap("Scattering Map", 2D) = "white" {}
         [HDR]_ScatteringColor("Scattering Color", Color) = (1,1,1,1)
         _ScatteringIntensity("Scattering Intensity", Range(0,10)) = 1
-        
-        // ----- 细节贴图阵列 -----
-        _EnableDetailArray("Enable Detail Texture Array", Float) = 0
+
+        [Toggle(ENABLE_DETAIL_ARRAY)]_EnableDetailArray("Enable Detail Texture Array", Float) = 0
         _DetailTextureArray("Detail Texture Array", 2DArray) = "" {}
         // ----- 区域 0 -----
         [Toggle]_DetailArea0_Enable("区域0-启用", Float) = 0
         _DetailArea0_DetailIndex("区域0-Mask索引", Float) = 1
-        _DetailArea0_DiffuseColor("区域0-颜色", Color) = (1,1,1,1)
-        _DetailArea0_DiffuseIntensity("区域0-颜色强度", Range(0,5)) = 1
-        _DetailArea0_Smoothness("区域0-光滑度", Range(0,1)) = 0
+        [HDR]_DetailArea0_BaseColor("区域0-细节颜色", Color) = (1,1,1,1)
+        [HDR]_DetailArea0_DetailColor("区域0-细节颜色", Color) = (1,1,1,1)
+        _DetailArea0_BaseSmoothness("区域0-基础光滑度", Range(0,1)) = 1.0
+        _DetailArea0_DetailSmoothness("区域0-细节光滑度", Range(0,1)) = 0.0
         _DetailArea0_BaseMapMatrix ("区域0-Transform", Vector) = (1,0,0,1)
         _DetailArea0_NormalIndex("区域0-Normal索引", Int) = 0
         _DetailArea0_NormalIntensity("区域0-Normal强度", Range(0,1)) = 1
@@ -39,9 +41,10 @@ Shader "RenderToolbox/Standard"
         // ----- 区域 1 -----
         [Toggle]_DetailArea1_Enable("区域1-启用", Float) = 0
         _DetailArea1_DetailIndex("区域1-Mask索引", Float) = 2
-        _DetailArea1_DiffuseColor("区域1-颜色", Color) = (1,1,1,1)
-        _DetailArea1_DiffuseIntensity("区域1-颜色强度", Range(0,5)) = 1
-        _DetailArea1_Smoothness("区域1-光滑度", Range(0,1)) = 0
+        [HDR]_DetailArea1_BaseColor("区域0-细节颜色", Color) = (1,1,1,1)
+        [HDR]_DetailArea1_DetailColor("区域1-颜色", Color) = (1,1,1,1)
+        _DetailArea1_BaseSmoothness("区域0-基础光滑度", Range(0,1)) = 1.0
+        _DetailArea1_DetailSmoothness("区域0-细节光滑度", Range(0,1)) = 0.0
         _DetailArea1_BaseMapMatrix ("区域1-Transform", Vector) = (1,0,0,1)
         _DetailArea1_NormalIndex("区域1-Normal索引", Int) = 0
         _DetailArea1_NormalIntensity("区域1-Normal强度", Range(0,1)) = 1
@@ -49,9 +52,11 @@ Shader "RenderToolbox/Standard"
         // ----- 区域 2 -----
         [Toggle]_DetailArea2_Enable("区域2-启用", Float) = 0
         _DetailArea2_DetailIndex("区域2-Mask索引", Float) = 3
-        _DetailArea2_DiffuseColor("区域2-颜色", Color) = (1,1,1,1)
-        _DetailArea2_DiffuseIntensity("区域2-颜色强度", Range(0,5)) = 1
-        _DetailArea2_Smoothness("区域2-光滑度", Range(0,1)) = 0
+        [HDR]_DetailArea2_BaseColor("区域0-细节颜色", Color) = (1,1,1,1)
+        [HDR]_DetailArea2_DetailColor("区域2-颜色", Color) = (1,1,1,1)
+        _DetailArea2_DetailColorIntensity("区域2-颜色强度", Range(0,5)) = 1
+        _DetailArea2_BaseSmoothness("区域0-基础光滑度", Range(0,1)) = 1.0
+        _DetailArea2_DetailSmoothness("区域0-细节光滑度", Range(0,1)) = 0.0
         _DetailArea2_BaseMapMatrix ("区域2-Transform", Vector) = (1,0,0,1)
         _DetailArea2_NormalIndex("区域2-Normal索引", Int) = 0
         _DetailArea2_NormalIntensity("区域2-Normal强度", Range(0,1)) = 1
@@ -59,17 +64,15 @@ Shader "RenderToolbox/Standard"
         // ----- 区域 3 -----
         [Toggle]_DetailArea3_Enable("区域3-启用", Float) = 0
         _DetailArea3_DetailIndex("区域3-Mask索引", Float) = 4
-        _DetailArea3_DiffuseColor("区域3-颜色", Color) = (1,1,1,1)
-        _DetailArea3_DiffuseIntensity("区域3-颜色强度", Range(0,5)) = 1
-        _DetailArea3_Smoothness("区域3-光滑度", Range(0,1)) = 0
+        [HDR]_DetailArea3_BaseColor("区域0-细节颜色", Color) = (1,1,1,1)
+        [HDR]_DetailArea3_DetailColor("区域3-颜色", Color) = (1,1,1,1)
+        _DetailArea3_DetailColorIntensity("区域3-颜色强度", Range(0,5)) = 1
+        _DetailArea3_BaseSmoothness("区域0-基础光滑度", Range(0,1)) = 1.0
+        _DetailArea3_DetailSmoothness("区域0-细节光滑度", Range(0,1)) = 0.0
         _DetailArea3_BaseMapMatrix ("区域3-Transform", Vector) = (1,0,0,1)
         _DetailArea3_NormalIndex("区域3-Normal索引", Int) = 0
         _DetailArea3_NormalIntensity("区域3-Normal强度", Range(0,1)) = 1
         _DetailArea3_NormalMapMatrix ("区域3-Normal Transform", Vector) = (1,0,0,1)
-        //_NemoCharacterReflection("Nemo Character Reflection", Cube) = "cube" {}
-        _RimLightColor("Rim Light Color", Color) = (1,1,1,1)
-        _RimLightIntensity("Rim Light Intensity", Range(0,5)) = 1
-        _RimLightPower("Rim Light Power", Range(0.1,10)) = 3
 
         [Enum(Opaque,0,Transparent,1)] _RenderMode ("渲染模式", float) = 0
         _RenderQueueOffset ("Render Queue Offset",range(-15,15)) = 0
@@ -247,5 +250,5 @@ Shader "RenderToolbox/Standard"
         }
 
     }
-    CustomEditor "CharacterClothShaderEditor"
+    CustomEditor "StandardShaderEditor"
 }

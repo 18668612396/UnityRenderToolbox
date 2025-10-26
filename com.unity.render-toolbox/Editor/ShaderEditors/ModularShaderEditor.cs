@@ -257,9 +257,7 @@ public abstract class ModularShaderEditor : ShaderGUI
             if (newIndex >= 0 && newIndex < activeModules.Count)
             {
                 // 交换位置
-                var temp = activeModules[currentIndex];
-                activeModules[currentIndex] = activeModules[newIndex];
-                activeModules[newIndex] = temp;
+                (activeModules[currentIndex], activeModules[newIndex]) = (activeModules[newIndex], activeModules[currentIndex]);
 
                 // 更新模块顺序
                 m_ModuleStates.Clear();
@@ -299,6 +297,8 @@ public abstract class ModularShaderEditor : ShaderGUI
 
         private void SetShaderKeyword(string keyword, bool enable)
         {
+            if (keyword == string.Empty) return;
+
             if (enable)
                 material.EnableKeyword(keyword);
             else

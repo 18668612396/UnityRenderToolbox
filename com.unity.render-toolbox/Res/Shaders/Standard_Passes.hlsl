@@ -153,7 +153,7 @@ half4 LisPassFragment(Varyings input, half facing : VFACE) : SV_TARGET
     //采样基础贴图
     half4 sample_base = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, input.uv.xy);
     half alpha = sample_base.a * _Color.a;
-    #if ENABLE_ALPHA_TEST_ON
+    #if _ENABLE_ALPHA_TEST_ON
     {
         clip(sample_base.w - _Cutoff);
     }

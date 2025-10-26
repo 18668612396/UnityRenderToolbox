@@ -5,7 +5,7 @@ Shader "RenderToolbox/Standard"
         // 材质类型 0-
         [Enum(Normal,0,SSS,1)]_MaterialType("Material Type", Float) = 0
         // ----- 主贴图 -----
-        _EnableAlphaTest("Enable Alpha Test", Float) = 0
+        [Toggle(_ENABLE_ALPHA_TEST_ON)]_EnableAlphaTest("Enable Alpha Test", Float) = 0
         _Cutoff("Alpha Cutoff", Range(0,1)) = 0.5
         _BaseMap("Main Texture", 2D) = "white" {}
         _Color("Main Color", Color) = (1,1,1,1)
@@ -121,7 +121,7 @@ Shader "RenderToolbox/Standard"
             #pragma fragment LisPassFragment
             // -------------------------------------
             #pragma shader_feature_local _ENABLE_SSS
-
+            #pragma shader_feature_local _ENABLE_ALPHA_TEST_ON
             // -------------------------------------
             #include "Standard_Inputs.hlsl"
             #include "Standard_Passes.hlsl"
@@ -151,7 +151,7 @@ Shader "RenderToolbox/Standard"
             HLSLPROGRAM
             #pragma vertex LitPassVertex
             #pragma fragment SubSurfaceScatteringPassFragment
-
+            #pragma shader_feature_local _ENABLE_ALPHA_TEST_ON
             #include "Standard_Inputs.hlsl"
             #include "Standard_Passes.hlsl"
             ENDHLSL
@@ -180,7 +180,7 @@ Shader "RenderToolbox/Standard"
 
             // -------------------------------------
             // Material Keywords
-            #pragma shader_feature_local _ALPHATEST_ON
+            #pragma shader_feature_local _ENABLE_ALPHA_TEST_ON
             #pragma shader_feature_local_fragment _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
 
             // -------------------------------------
@@ -226,7 +226,7 @@ Shader "RenderToolbox/Standard"
             #pragma shader_feature_local _NORMALMAP
             #pragma shader_feature_local _PARALLAXMAP
             #pragma shader_feature_local _ _DETAIL_MULX2 _DETAIL_SCALED
-            #pragma shader_feature_local _ALPHATEST_ON
+            #pragma shader_feature_local _ENABLE_ALPHA_TEST_ON
             #pragma shader_feature_local_fragment _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
 
             // -------------------------------------

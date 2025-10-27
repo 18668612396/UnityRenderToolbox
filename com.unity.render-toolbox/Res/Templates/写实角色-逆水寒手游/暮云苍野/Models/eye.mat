@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: eye
-  m_Shader: {fileID: 4800000, guid: 9d25f7aa5f86b804cb23bf48fd3b666d, type: 3}
+  m_Shader: {fileID: 4800000, guid: 79f36a9fec77b374d9afd4dca337016f, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -25,7 +25,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _BaseMap:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: dc02201891153ad49a976f366dca3cc4, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BumpMap:
@@ -33,7 +33,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _CorneaCubemap:
-        m_Texture: {fileID: 8900000, guid: 9b2d966d281673747abe7310cb1b47e4, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DetailAlbedoMap:
@@ -68,8 +68,12 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _MidPlaneDisplacement:
+        m_Texture: {fileID: 2800000, guid: 2ff0ef291a32d0345bde4f5854207e04, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _NormalMap:
-        m_Texture: {fileID: 2800000, guid: 053040aa65cd5724d829446253e1cfb2, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OcclusionMap:
@@ -81,7 +85,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _PupilBaseMap:
-        m_Texture: {fileID: 2800000, guid: d94c8660729f18046b108dbd91961212, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _PupilMap:
@@ -89,7 +93,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _PupilNormalMap:
-        m_Texture: {fileID: 2800000, guid: 053040aa65cd5724d829446253e1cfb2, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _ScatteringMap:
@@ -97,7 +101,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _ScleraBaseMap:
-        m_Texture: {fileID: 2800000, guid: f60a42fc1baab224f868abe8e7921c71, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SecondBaseMap:
@@ -142,6 +146,7 @@ Material:
     - _CorneaSmoothness: 0.9
     - _Cull: 2
     - _Cutoff: 0.5
+    - _DepthScale: 1.2
     - _DetailAlbedoMapScale: 1
     - _DetailArea0_BaseSmoothness: 1
     - _DetailArea0_DetailIndex: 1
@@ -178,9 +183,11 @@ Material:
     - _EnableSecond: 0
     - _EnableSubSurfaceScattering: 0
     - _EnvironmentReflections: 1
-    - _GlossMapScale: 1
-    - _Glossiness: 0.4472136
-    - _GlossyReflections: 1
+    - _GlossMapScale: 0
+    - _Glossiness: 0
+    - _GlossyReflections: 0
+    - _IoR: 1.6
+    - _IrisUVRadius: 0.15
     - _Metallic: 0
     - _Mode: 0
     - _NormalIntensity: 1
@@ -188,21 +195,22 @@ Material:
     - _OffsetW: 0.02
     - _OutlineDstBlend: 0
     - _OutlineSrcBlend: 1
-    - _Parallax: 0.02
-    - _PupilFeather: 0.0162
-    - _PupilHeight: 0
-    - _PupilInsideSmoothness: 0.541
+    - _Parallax: 0.005
+    - _PupilFeather: 0.5
+    - _PupilHeight: 0.5
+    - _PupilInsideSmoothness: 0.5
     - _PupilRadius: 0.017
-    - _PupilSize: 0.275
+    - _PupilSize: 0.5
     - _QueueOffset: 0
     - _ReceiveShadows: 1
-    - _RefractStrength: 1.13
+    - _RefractStrength: 0.5
     - _RenderMode: 0
     - _RenderQueueOffset: 0
+    - _ScaleByCenter: 1
     - _ScatteringIntensity: 1
-    - _ScleraSmoothness: 0.846
+    - _ScleraSmoothness: 0.5
     - _SecondColorIntensity: 1
-    - _Smoothness: 0.4472136
+    - _Smoothness: 0.5
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
@@ -234,7 +242,7 @@ Material:
     - _DetailArea3_NormalMapMatrix: {r: 1, g: 0, b: 0, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _OffsetW: {r: 0, g: 0, b: 1, a: 1}
-    - _PupilColor: {r: 0.29045033, g: 0.44334254, b: 0.5754717, a: 1}
+    - _PupilColor: {r: 0, g: 0, b: 0, a: 1}
     - _ScatteringColor: {r: 1, g: 1, b: 1, a: 1}
     - _ScleraColor: {r: 1, g: 1, b: 1, a: 1}
     - _SecondColor: {r: 1, g: 1, b: 1, a: 1}

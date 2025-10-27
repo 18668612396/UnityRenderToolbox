@@ -160,7 +160,7 @@ Shader "Custom/Eye_Test"
 
                 float2 t2 = 1 / (_IrisUVRadius * 2) * t1;
                 t2 += 0.5;
-                float2 finalUV = scalePupils(t2, 0.7);
+                float2 finalUV = scalePupils(t2, 1);
                 float4 baseColor = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, finalUV);
                 return half4(baseColor.rgb * _BaseColor.rgb, 1);
             }

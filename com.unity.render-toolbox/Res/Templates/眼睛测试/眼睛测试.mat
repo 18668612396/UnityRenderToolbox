@@ -8,18 +8,18 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: "\u773C\u775B\u6D4B\u8BD5"
-  m_Shader: {fileID: 4800000, guid: 79f36a9fec77b374d9afd4dca337016f, type: 3}
+  m_Shader: {fileID: 4800000, guid: 07bac2ab13052c144a3a88bd054c14e7, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
-  m_ValidKeywords: []
+  m_ValidKeywords:
+  - _KEYWORD0_ON
   m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
   stringTagMap: {}
-  disabledShaderPasses:
-  - MOTIONVECTORS
+  disabledShaderPasses: []
   m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
@@ -77,7 +77,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NormalMap:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 6d81757384ea74d42babff758ee0e48c, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NormalTex:
@@ -112,6 +112,30 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _T_EyeIrisBaseColor:
+        m_Texture: {fileID: 2800000, guid: dc02201891153ad49a976f366dca3cc4, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _T_EyeMidPlaneDisplacement:
+        m_Texture: {fileID: 2800000, guid: 2ff0ef291a32d0345bde4f5854207e04, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _T_EyeMidPlaneDisplacement1:
+        m_Texture: {fileID: 2800000, guid: 2ff0ef291a32d0345bde4f5854207e04, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _T_Eye_N:
+        m_Texture: {fileID: 2800000, guid: c540d301bba36b74e9e636b6fed56402, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _T_Eye_Sphere_N:
+        m_Texture: {fileID: 2800000, guid: 6d81757384ea74d42babff758ee0e48c, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _texcoord:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -137,12 +161,13 @@ Material:
     - _CorneaSmoothness: 0.9
     - _Cull: 2
     - _Cutoff: 0.5
-    - _DepthScale: 1.2
+    - _DepthScale: 2.43
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _DstBlendAlpha: 0
     - _EnvironmentReflections: 1
+    - _EyeDepth: 1.86
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
@@ -153,7 +178,11 @@ Material:
     - _IrisUVOffset: 0.5
     - _IrisUVRadius: 0.15
     - _IrisUVScale: 1
+    - _Keyword0: 1
     - _LerpAmount: 0
+    - _LimbusUVWidth: 0.35
+    - _LimbusUVWidthColor: 0.035
+    - _LimbusUVWidthShading: 0.045
     - _Metallic: 0
     - _OcclusionStrength: 1
     - _Offset: 0.5
@@ -165,10 +194,11 @@ Material:
     - _PupilScale: 0.67
     - _PupilSize: 0.5
     - _PupilUVScale: 0.61
+    - _QueueControl: 0
     - _QueueOffset: 0
     - _ReceiveShadows: 1
     - _RefractStrength: 0.5
-    - _Scale: 3.13
+    - _Scale: 0.758
     - _ScaleByCenter: 1
     - _ScleraSmoothness: 0.5
     - _Smoothness: 0.5
@@ -188,6 +218,7 @@ Material:
     - _ControlMapUVOffset: {r: 0, g: 0, b: 0, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _LerpColor: {r: 1, g: 1, b: 1, a: 1}
+    - _LimbusUVWidth: {r: 0.32, g: 0.35, b: 0, a: 0}
     - _OffsetW: {r: 0, g: 0, b: 1, a: 1}
     - _ParallaxHeight: {r: 2, g: 2, b: 1.99, a: 2.71}
     - _PupilColor: {r: 0, g: 0, b: 0, a: 1}

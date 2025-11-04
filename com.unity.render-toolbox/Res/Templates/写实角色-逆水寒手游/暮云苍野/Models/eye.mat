@@ -73,7 +73,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NormalMap:
-        m_Texture: {fileID: 2800000, guid: 6d81757384ea74d42babff758ee0e48c, type: 3}
+        m_Texture: {fileID: 2800000, guid: c726770b9e815664fa9a28fd81c25bd0, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OcclusionMap:
@@ -183,11 +183,13 @@ Material:
     - _EnableSecond: 0
     - _EnableSubSurfaceScattering: 0
     - _EnvironmentReflections: 1
+    - _EyeDepth: 1.86
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
-    - _IoR: 1.6
+    - _IoR: 1.36
     - _IrisUVRadius: 0.15
+    - _LimbusUVWidth: 0.35
     - _Metallic: 0
     - _Mode: 0
     - _NormalIntensity: 1
@@ -206,6 +208,7 @@ Material:
     - _RefractStrength: 0.5
     - _RenderMode: 0
     - _RenderQueueOffset: 0
+    - _Scale: 0.692
     - _ScaleByCenter: 1
     - _ScatteringIntensity: 1
     - _ScleraSmoothness: 0.5

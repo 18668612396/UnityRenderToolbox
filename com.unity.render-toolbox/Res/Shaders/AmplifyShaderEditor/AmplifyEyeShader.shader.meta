@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 07bac2ab13052c144a3a88bd054c14e7
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures:
+  - _T_EyeIrisBaseColor: {fileID: 2800000, guid: dc02201891153ad49a976f366dca3cc4, type: 3}
+  - _T_Eye_Sphere_N: {fileID: 2800000, guid: 6d81757384ea74d42babff758ee0e48c, type: 3}
+  - _T_Eye_N: {fileID: 2800000, guid: c540d301bba36b74e9e636b6fed56402, type: 3}
+  - _T_EyeMidPlaneDisplacement1: {fileID: 2800000, guid: 2ff0ef291a32d0345bde4f5854207e04, type: 3}
+  - _T_EyeMidPlaneDisplacement: {fileID: 2800000, guid: 2ff0ef291a32d0345bde4f5854207e04, type: 3}
+  nonModifiableTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

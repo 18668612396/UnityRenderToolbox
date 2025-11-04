@@ -15,10 +15,10 @@ MonoBehaviour:
   m_functionInfo: "// Made with Amplify Shader Editor v1.9.9.5\n// Available at the
     Unity Asset Store - http://u3d.as/y3X \n/*ASEBEGIN\nVersion=19905\nNode;AmplifyShaderEditor.FunctionInput,
     AmplifyShaderEditor, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null;1;-480,-16;Inherit;True;Input;2;0;False;1;0;FLOAT2;0,0;False;1;FLOAT2;0\nNode;AmplifyShaderEditor.ComponentMaskNode,
-    AmplifyShaderEditor, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null;2;-240,-32;Inherit;False;True;False;True;True;1;0;FLOAT2;0,0;False;1;FLOAT;0\nNode;AmplifyShaderEditor.ComponentMaskNode,
-    AmplifyShaderEditor, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null;4;-240,64;Inherit;False;False;True;True;True;1;0;FLOAT2;0,0;False;1;FLOAT;0\nNode;AmplifyShaderEditor.FunctionOutput,
+    AmplifyShaderEditor, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null;4;-240,64;Inherit;False;False;True;True;True;1;0;FLOAT2;0,0;False;1;FLOAT;0\nNode;AmplifyShaderEditor.ComponentMaskNode,
+    AmplifyShaderEditor, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null;2;-240,-32;Inherit;False;True;False;True;True;1;0;FLOAT2;0,0;False;1;FLOAT;0\nNode;AmplifyShaderEditor.FunctionOutput,
     AmplifyShaderEditor, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null;0;32,-48;Inherit;False;True;-1;R;0;False;1;0;FLOAT;0;False;1;FLOAT;0\nNode;AmplifyShaderEditor.FunctionOutput,
-    AmplifyShaderEditor, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null;5;32,48;Inherit;False;False;-1;G;1;False;1;0;FLOAT;0;False;1;FLOAT;0\nWireConnection;2;0;1;0\nWireConnection;4;0;1;0\nWireConnection;0;0;2;0\nWireConnection;5;0;4;0\nASEEND*/\n//CHKSM=5FCE8AC358174131BFE580335F83ED3B4B86515D"
+    AmplifyShaderEditor, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null;5;32,48;Inherit;False;False;-1;G;1;False;1;0;FLOAT;0;False;1;FLOAT;0\nWireConnection;4;0;1;0\nWireConnection;2;0;1;0\nWireConnection;0;0;2;0\nWireConnection;5;0;4;0\nASEEND*/\n//CHKSM=1D8F3297BAA11ECE3D1E29391D6CEE5FBEACEE31"
   m_functionName: 
   m_description: 
   m_additionalIncludes:
